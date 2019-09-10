@@ -1,0 +1,85 @@
+
+compare:     file format pei-i386
+
+
+Disassembly of section .text:
+
+00401000 <_compare>:
+  401000:	55                   	push   %ebp
+  401001:	89 e5                	mov    %esp,%ebp
+  401003:	83 ec 10             	sub    $0x10,%esp
+  401006:	8b 45 08             	mov    0x8(%ebp),%eax
+  401009:	39 45 0c             	cmp    %eax,0xc(%ebp)
+  40100c:	0f 4e 45 0c          	cmovle 0xc(%ebp),%eax
+  401010:	89 45 fc             	mov    %eax,-0x4(%ebp)
+  401013:	8b 45 fc             	mov    -0x4(%ebp),%eax
+  401016:	c9                   	leave  
+  401017:	c3                   	ret    
+
+00401018 <__CTOR_LIST__>:
+  401018:	ff                   	(bad)  
+  401019:	ff                   	(bad)  
+  40101a:	ff                   	(bad)  
+  40101b:	ff 00                	incl   (%eax)
+  40101d:	00 00                	add    %al,(%eax)
+	...
+
+00401020 <__DTOR_LIST__>:
+  401020:	ff                   	(bad)  
+  401021:	ff                   	(bad)  
+  401022:	ff                   	(bad)  
+  401023:	ff 00                	incl   (%eax)
+  401025:	00 00                	add    %al,(%eax)
+	...
+
+Disassembly of section .rdata:
+
+00402000 <__data_end__>:
+  402000:	47                   	inc    %edi
+  402001:	43                   	inc    %ebx
+  402002:	43                   	inc    %ebx
+  402003:	3a 20                	cmp    (%eax),%ah
+  402005:	28 47 4e             	sub    %al,0x4e(%edi)
+  402008:	55                   	push   %ebp
+  402009:	29 20                	sub    %esp,(%eax)
+  40200b:	37                   	aaa    
+  40200c:	2e 34 2e             	cs xor $0x2e,%al
+  40200f:	30 00                	xor    %al,(%eax)
+  402011:	00 00                	add    %al,(%eax)
+	...
+
+Disassembly of section .eh_fram:
+
+00403000 <.eh_frame>:
+  403000:	14 00                	adc    $0x0,%al
+  403002:	00 00                	add    %al,(%eax)
+  403004:	00 00                	add    %al,(%eax)
+  403006:	00 00                	add    %al,(%eax)
+  403008:	01 7a 52             	add    %edi,0x52(%edx)
+  40300b:	00 01                	add    %al,(%ecx)
+  40300d:	7c 08                	jl     403017 <.eh_frame+0x17>
+  40300f:	01 1b                	add    %ebx,(%ebx)
+  403011:	0c 04                	or     $0x4,%al
+  403013:	04 88                	add    $0x88,%al
+  403015:	01 00                	add    %eax,(%eax)
+  403017:	00 1c 00             	add    %bl,(%eax,%eax,1)
+  40301a:	00 00                	add    %al,(%eax)
+  40301c:	1c 00                	sbb    $0x0,%al
+  40301e:	00 00                	add    %al,(%eax)
+  403020:	e0 df                	loopne 403001 <.eh_frame+0x1>
+  403022:	ff                   	(bad)  
+  403023:	ff 18                	lcall  *(%eax)
+  403025:	00 00                	add    %al,(%eax)
+  403027:	00 00                	add    %al,(%eax)
+  403029:	41                   	inc    %ecx
+  40302a:	0e                   	push   %cs
+  40302b:	08 85 02 42 0d 05    	or     %al,0x50d4202(%ebp)
+  403031:	54                   	push   %esp
+  403032:	c5 0c 04             	lds    (%esp,%eax,1),%ecx
+  403035:	04 00                	add    $0x0,%al
+	...
+
+Disassembly of section .idata:
+
+00404000 <__bss_end__>:
+	...

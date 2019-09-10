@@ -1,0 +1,90 @@
+
+testvec:     file format elf32-bigmips
+testvec
+architecture: mips:3000, flags 0x00000012:
+EXEC_P, HAS_SYMS
+start address 0x00000000
+
+Program Header:
+    LOAD off    0x00000060 vaddr 0x00000000 paddr 0x00000000 align 2**4
+         filesz 0x00000058 memsz 0x00000058 flags rwx
+private flags = 1: [no abi set] [mips1] [not 32bitmode] [noreorder]
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         00000058  00000000  00000000  00000060  2**4
+                  CONTENTS, ALLOC, LOAD, CODE
+  1 .reginfo      00000018  00000000  00000000  000000b8  2**2
+                  CONTENTS, READONLY, LINK_ONCE_SAME_SIZE
+  2 .pdr          00000020  00000000  00000000  000000d0  2**2
+                  CONTENTS, READONLY
+  3 .debug_abbrev 00000048  00000000  00000000  000000f0  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  4 .debug_info   000000e9  00000000  00000000  00000138  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  5 .debug_line   00000039  00000000  00000000  00000221  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_frame  0000002c  00000000  00000000  0000025c  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_loc    0000002b  00000000  00000000  00000288  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_pubnames 0000001f  00000000  00000000  000002b3  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_aranges 00000020  00000000  00000000  000002d2  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .comment      00000012  00000000  00000000  000002f2  2**0
+                  CONTENTS, READONLY
+SYMBOL TABLE:
+00000000 l    d  .text	00000000 .text
+00000000 l    d  .reginfo	00000000 .reginfo
+00000000 l    d  .pdr	00000000 .pdr
+00000000 l    d  .debug_abbrev	00000000 .debug_abbrev
+00000000 l    d  .debug_info	00000000 .debug_info
+00000000 l    d  .debug_line	00000000 .debug_line
+00000000 l    d  .debug_frame	00000000 .debug_frame
+00000000 l    d  .debug_loc	00000000 .debug_loc
+00000000 l    d  .debug_pubnames	00000000 .debug_pubnames
+00000000 l    d  .debug_aranges	00000000 .debug_aranges
+00000000 l    d  .comment	00000000 .comment
+00000000 l    df *ABS*	00000000 add.c
+00000010 g     F .text	00000048 addition
+
+
+
+Disassembly of section .text:
+
+00000000 <addition-0x10>:
+   0:	0c000004 	jal	10 <addition>
+   4:	00000000 	nop
+   8:	ac020054 	sw	v0,84(zero)
+   c:	00000000 	nop
+
+00000010 <addition>:
+int addition()
+{
+  10:	27bdffe8 	addiu	sp,sp,-24
+  14:	afbe0010 	sw	s8,16(sp)
+  18:	03a0f021 	move	s8,sp
+int a, b, c;
+
+a = 3;
+  1c:	24020003 	li	v0,3
+  20:	afc20008 	sw	v0,8(s8)
+b = 4;
+  24:	24020004 	li	v0,4
+  28:	afc20004 	sw	v0,4(s8)
+c = a + b;
+  2c:	8fc30008 	lw	v1,8(s8)
+  30:	8fc20004 	lw	v0,4(s8)
+  34:	00000000 	nop
+  38:	00621021 	addu	v0,v1,v0
+  3c:	afc20000 	sw	v0,0(s8)
+
+return c;
+  40:	8fc20000 	lw	v0,0(s8)
+}
+  44:	03c0e821 	move	sp,s8
+  48:	8fbe0010 	lw	s8,16(sp)
+  4c:	27bd0018 	addiu	sp,sp,24
+  50:	03e00008 	jr	ra
+  54:	00000000 	nop

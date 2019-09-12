@@ -36,10 +36,10 @@ testvec.o: testvec.s
 	$(AS) $(ASFLAGS) testvec.s -o testvec.o
 	
 add.o:	add.c
- 	$(CPP) add.c > add.i
+	$(CPP) add.c > add.i
 	$(CC) -Wall -S add.i
 	$(AS) $(ASFLAGS) add.s -o add.o
-	$(CC) $(CCFLAGS) add.c
+#	$(CC) $(CCFLAGS) add.c
 	
 clean:
 	rm -rf *.o *.mif *.dump *.hex *.bin *.mif testvec

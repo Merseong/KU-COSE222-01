@@ -1,0 +1,70 @@
+
+testvec:     file format elf32-bigmips
+testvec
+architecture: mips:3000, flags 0x00000012:
+EXEC_P, HAS_SYMS
+start address 0x00000000
+
+Program Header:
+    LOAD off    0x00000060 vaddr 0x00000000 paddr 0x00000000 align 2**4
+         filesz 0x00000084 memsz 0x00000084 flags rwx
+private flags = 1: [no abi set] [mips1] [not 32bitmode] [noreorder]
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         00000084  00000000  00000000  00000060  2**4
+                  CONTENTS, ALLOC, LOAD, CODE
+  1 .reginfo      00000018  00000000  00000000  000000e4  2**2
+                  CONTENTS, READONLY, LINK_ONCE_SAME_SIZE
+  2 .pdr          00000020  00000000  00000000  000000fc  2**2
+                  CONTENTS, READONLY
+  3 .comment      00000012  00000000  00000000  0000011c  2**0
+                  CONTENTS, READONLY
+SYMBOL TABLE:
+00000000 l    d  .text	00000000 .text
+00000000 l    d  .reginfo	00000000 .reginfo
+00000000 l    d  .pdr	00000000 .pdr
+00000000 l    d  .comment	00000000 .comment
+00000000 l    df *ABS*	00000000 compare.c
+00000010 g     F .text	00000074 compare
+
+
+
+Disassembly of section .text:
+
+00000000 <compare-0x10>:
+   0:	0c000004 	jal	10 <compare>
+   4:	00000000 	nop
+   8:	ac020054 	sw	v0,84(zero)
+   c:	00000000 	nop
+
+00000010 <compare>:
+  10:	27bdffe8 	addiu	sp,sp,-24
+  14:	afbe0010 	sw	s8,16(sp)
+  18:	03a0f021 	move	s8,sp
+  1c:	afc40018 	sw	a0,24(s8)
+  20:	afc5001c 	sw	a1,28(s8)
+  24:	8fc20018 	lw	v0,24(s8)
+  28:	00000000 	nop
+  2c:	afc2000c 	sw	v0,12(s8)
+  30:	8fc3001c 	lw	v1,28(s8)
+  34:	00000000 	nop
+  38:	afc30008 	sw	v1,8(s8)
+  3c:	8fc40008 	lw	a0,8(s8)
+  40:	8fc3000c 	lw	v1,12(s8)
+  44:	00000000 	nop
+  48:	0064102a 	slt	v0,v1,a0
+  4c:	10400004 	beqz	v0,60 <compare+0x50>
+  50:	00000000 	nop
+  54:	8fc4000c 	lw	a0,12(s8)
+  58:	00000000 	nop
+  5c:	afc40008 	sw	a0,8(s8)
+  60:	8fc20008 	lw	v0,8(s8)
+  64:	00000000 	nop
+  68:	afc20000 	sw	v0,0(s8)
+  6c:	8fc20000 	lw	v0,0(s8)
+  70:	03c0e821 	move	sp,s8
+  74:	8fbe0010 	lw	s8,16(sp)
+  78:	27bd0018 	addiu	sp,sp,24
+  7c:	03e00008 	jr	ra
+  80:	00000000 	nop

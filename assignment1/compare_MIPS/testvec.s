@@ -1,5 +1,5 @@
 .text
 .align 4
 
-	jal	addition
+	jal	compare
 	sw   $v0, 84($0)

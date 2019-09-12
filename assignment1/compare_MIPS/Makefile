@@ -31,5 +31,5 @@ compare.o:	compare.c
 	$(AS) $(ASFLAGS) compare.s -o compare.o
 #	$(CC) $(CCFLAGS) compare.c
 	
-clean:
-	rm -rf *.o *.mif *.dump *.hex *.bin *.mif testvec
+#clean:
+#	rm -rf *.o *.mif *.dump *.hex *.bin *.mif testvec

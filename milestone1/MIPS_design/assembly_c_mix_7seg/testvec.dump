@@ -1,0 +1,110 @@
+
+testvec:     file format elf32-bigmips
+testvec
+architecture: mips:3000, flags 0x00000012:
+EXEC_P, HAS_SYMS
+start address 0x00000000
+
+Program Header:
+    LOAD off    0x00000060 vaddr 0x00000000 paddr 0x00000000 align 2**4
+         filesz 0x00000800 memsz 0x00000800 flags rwx
+private flags = 1: [no abi set] [mips1] [not 32bitmode] [noreorder]
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         00000084  00000000  00000000  00000060  2**4
+                  CONTENTS, ALLOC, LOAD, CODE
+  1 .data         00000400  00000400  00000400  00000460  2**4
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .reginfo      00000018  00000000  00000000  00000860  2**2
+                  CONTENTS, READONLY, LINK_ONCE_SAME_SIZE
+  3 .pdr          00000020  00000000  00000000  00000878  2**2
+                  CONTENTS, READONLY
+  4 .debug_abbrev 00000051  00000000  00000000  00000898  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  5 .debug_info   00000131  00000000  00000000  000008e9  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_line   00000041  00000000  00000000  00000a1a  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_frame  0000002c  00000000  00000000  00000a5c  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_loc    0000002b  00000000  00000000  00000a88  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_pubnames 0000001f  00000000  00000000  00000ab3  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_aranges 00000020  00000000  00000000  00000ad2  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 11 .comment      00000012  00000000  00000000  00000af2  2**0
+                  CONTENTS, READONLY
+SYMBOL TABLE:
+00000000 l    d  .text	00000000 .text
+00000400 l    d  .data	00000000 .data
+00000000 l    d  .reginfo	00000000 .reginfo
+00000000 l    d  .pdr	00000000 .pdr
+00000000 l    d  .debug_abbrev	00000000 .debug_abbrev
+00000000 l    d  .debug_info	00000000 .debug_info
+00000000 l    d  .debug_line	00000000 .debug_line
+00000000 l    d  .debug_frame	00000000 .debug_frame
+00000000 l    d  .debug_loc	00000000 .debug_loc
+00000000 l    d  .debug_pubnames	00000000 .debug_pubnames
+00000000 l    d  .debug_aranges	00000000 .debug_aranges
+00000000 l    d  .comment	00000000 .comment
+00000400 l       .data	00000000 stack
+00000000 l    df *ABS*	00000000 SevenSeg.c
+00000010 g     F .text	00000074 SevenSeg
+
+
+
+Disassembly of section .text:
+
+00000000 <SevenSeg-0x10>:
+   0:	3c1d0000 	lui	sp,0x0
+   4:	27bd0400 	addiu	sp,sp,1024
+   8:	08000004 	j	10 <SevenSeg>
+   c:	00000000 	nop
+
+00000010 <SevenSeg>:
+#include "SevenSeg.h"
+
+int SevenSeg()
+{
+  10:	27bdffe8 	addiu	sp,sp,-24
+  14:	afbe0010 	sw	s8,16(sp)
+  18:	03a0f021 	move	s8,sp
+	unsigned int * seg0_addr = (unsigned int *) SevenSeg0;
+  1c:	3c02ffff 	lui	v0,0xffff
+  20:	3442200c 	ori	v0,v0,0x200c
+  24:	afc2000c 	sw	v0,12(s8)
+	unsigned int * seg1_addr = (unsigned int *) SevenSeg1;
+  28:	3c02ffff 	lui	v0,0xffff
+  2c:	34422010 	ori	v0,v0,0x2010
+  30:	afc20008 	sw	v0,8(s8)
+	unsigned int * seg2_addr = (unsigned int *) SevenSeg2;
+  34:	3c02ffff 	lui	v0,0xffff
+  38:	34422014 	ori	v0,v0,0x2014
+  3c:	afc20004 	sw	v0,4(s8)
+	unsigned int * seg3_addr = (unsigned int *) SevenSeg3;
+  40:	3c02ffff 	lui	v0,0xffff
+  44:	34422018 	ori	v0,v0,0x2018
+  48:	afc20000 	sw	v0,0(s8)
+
+	*seg0_addr = SEG_5;
+  4c:	8fc3000c 	lw	v1,12(s8)
+  50:	24020012 	li	v0,18
+  54:	ac620000 	sw	v0,0(v1)
+	*seg1_addr = SEG_0;
+  58:	8fc30008 	lw	v1,8(s8)
+  5c:	24020040 	li	v0,64
+  60:	ac620000 	sw	v0,0(v1)
+	*seg2_addr = SEG_2;
+  64:	8fc30004 	lw	v1,4(s8)
+  68:	24020024 	li	v0,36
+  6c:	ac620000 	sw	v0,0(v1)
+	*seg3_addr = SEG_0;
+  70:	8fc30000 	lw	v1,0(s8)
+  74:	24020040 	li	v0,64
+  78:	ac620000 	sw	v0,0(v1)
+
+	while(1);
+  7c:	0800001f 	j	7c <SevenSeg+0x6c>
+  80:	00000000 	nop

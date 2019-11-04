@@ -4,7 +4,7 @@ JedecChain;
 	DefaultMfr(6E);
 
 	P ActionCode(Cfg)
-		Device PartName(EP3C16F484) Path("C:/Users/suhtw/Downloads/MIPS_design/MIPS_System_Syn/") File("MIPS_System.sof") MfrSpec(OpMask(1));
+		Device PartName(EP3C16F484) Path("C:/Users/Merseong/Documents/GitProjects/KU-COSE222-01/milestone1/MIPS_design/MIPS_System_Syn/") File("MIPS_System.sof") MfrSpec(OpMask(1));
 
 ChainEnd;
 

@@ -1,0 +1,121 @@
+
+testvec:     file format elf32-bigmips
+testvec
+architecture: mips:3000, flags 0x00000012:
+EXEC_P, HAS_SYMS
+start address 0x00000000
+
+Program Header:
+    LOAD off    0x00000060 vaddr 0x00000000 paddr 0x00000000 align 2**4
+         filesz 0x00000800 memsz 0x00000800 flags rwx
+private flags = 1: [no abi set] [mips1] [not 32bitmode] [noreorder]
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         000000b0  00000000  00000000  00000060  2**4
+                  CONTENTS, ALLOC, LOAD, CODE
+  1 .data         00000400  00000400  00000400  00000460  2**4
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .reginfo      00000018  00000000  00000000  00000860  2**2
+                  CONTENTS, READONLY, LINK_ONCE_SAME_SIZE
+  3 .pdr          00000020  00000000  00000000  00000878  2**2
+                  CONTENTS, READONLY
+  4 .debug_abbrev 00000051  00000000  00000000  00000898  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  5 .debug_info   00000104  00000000  00000000  000008e9  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_line   00000042  00000000  00000000  000009ed  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_frame  0000002c  00000000  00000000  00000a30  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_loc    0000002b  00000000  00000000  00000a5c  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_pubnames 0000001f  00000000  00000000  00000a87  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_aranges 00000020  00000000  00000000  00000aa6  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 11 .comment      00000012  00000000  00000000  00000ac6  2**0
+                  CONTENTS, READONLY
+SYMBOL TABLE:
+00000000 l    d  .text	00000000 .text
+00000400 l    d  .data	00000000 .data
+00000000 l    d  .reginfo	00000000 .reginfo
+00000000 l    d  .pdr	00000000 .pdr
+00000000 l    d  .debug_abbrev	00000000 .debug_abbrev
+00000000 l    d  .debug_info	00000000 .debug_info
+00000000 l    d  .debug_line	00000000 .debug_line
+00000000 l    d  .debug_frame	00000000 .debug_frame
+00000000 l    d  .debug_loc	00000000 .debug_loc
+00000000 l    d  .debug_pubnames	00000000 .debug_pubnames
+00000000 l    d  .debug_aranges	00000000 .debug_aranges
+00000000 l    d  .comment	00000000 .comment
+00000400 l       .data	00000000 stack
+00000000 l    df *ABS*	00000000 SevenSeg.c
+00000010 g     F .text	000000a0 SevenSeg
+
+
+
+Disassembly of section .text:
+
+00000000 <SevenSeg-0x10>:
+   0:	3c1d0000 	lui	sp,0x0
+   4:	27bd0400 	addiu	sp,sp,1024
+   8:	08000004 	j	10 <SevenSeg>
+   c:	00000000 	nop
+
+00000010 <SevenSeg>:
+#include "SevenSeg.h"
+
+int SevenSeg()
+{
+  10:	27bdfff0 	addiu	sp,sp,-16
+  14:	afbe0008 	sw	s8,8(sp)
+  18:	03a0f021 	move	s8,sp
+unsigned int * seg0_addr = (unsigned int *) SevenSeg0;
+  1c:	3c02ffff 	lui	v0,0xffff
+  20:	3442200c 	ori	v0,v0,0x200c
+  24:	afc20004 	sw	v0,4(s8)
+unsigned int i;
+
+while (1){
+
+  	 *seg0_addr = SEG_5;
+  28:	8fc30004 	lw	v1,4(s8)
+  2c:	24020012 	li	v0,18
+  30:	ac620000 	sw	v0,0(v1)
+     for (i=0; i<0xFFFFF; i++) ;
+  34:	afc00000 	sw	zero,0(s8)
+  38:	08000014 	j	50 <SevenSeg+0x40>
+  3c:	00000000 	nop
+  40:	8fc20000 	lw	v0,0(s8)
+  44:	00000000 	nop
+  48:	24420001 	addiu	v0,v0,1
+  4c:	afc20000 	sw	v0,0(s8)
+  50:	8fc30000 	lw	v1,0(s8)
+  54:	3c02000f 	lui	v0,0xf
+  58:	3442ffff 	ori	v0,v0,0xffff
+  5c:	0062102b 	sltu	v0,v1,v0
+  60:	1440fff7 	bnez	v0,40 <SevenSeg+0x30>
+  64:	00000000 	nop
+
+     *seg0_addr = SEG_A;
+  68:	8fc30004 	lw	v1,4(s8)
+  6c:	24020008 	li	v0,8
+  70:	ac620000 	sw	v0,0(v1)
+     for (i=0; i<0xFFFFF; i++) ;
+  74:	afc00000 	sw	zero,0(s8)
+  78:	08000024 	j	90 <SevenSeg+0x80>
+  7c:	00000000 	nop
+  80:	8fc20000 	lw	v0,0(s8)
+  84:	00000000 	nop
+  88:	24420001 	addiu	v0,v0,1
+  8c:	afc20000 	sw	v0,0(s8)
+  90:	8fc30000 	lw	v1,0(s8)
+  94:	3c02000f 	lui	v0,0xf
+  98:	3442ffff 	ori	v0,v0,0xffff
+  9c:	0062102b 	sltu	v0,v1,v0
+  a0:	1440fff7 	bnez	v0,80 <SevenSeg+0x70>
+  a4:	00000000 	nop
+}
+  a8:	0800000a 	j	28 <SevenSeg+0x18>
+  ac:	00000000 	nop

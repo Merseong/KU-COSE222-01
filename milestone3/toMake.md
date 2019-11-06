@@ -18,9 +18,26 @@
 
 ## 구현해야 할 것
 
-- [ ]   nop
-- [ ]   li
-- [ ]   jal, jr
+- [x]   nop 
+    * 00000000  (nop)
+    * 0000 00/00 000/0 0000/ 0000 0/000 00/00 0000
+    * [x] aludec에서 funct가 00000일때 0과 0을 or하게 만듬
+- [x]   li
+    * addui랑 같음
+- [ ]   jal
+    * 0c00002a 	(jal	a8 \<display\>)
+    * 0000 11/00 0000 0000 0000 0000 0010 1010
+    * [x] alusrc와 regdst의 길이를 2로 늘림 (to [1:0]): controller, datapath의 input과 output 수정
+    * [x] controller에서, jal의 코드를 받으면 적당한 컨트롤을 뱉게함 -> jump와 or $31, pcplus4, $0을 하도록
+    * [x] mux4를 만들어 regdst와 alusrc 맞게 만들기
+    * [x] regdst가 10일때 $31을 뱉게 만듬
+    * [x] alusrc가 10일때 pcplus4를 뱉게함
+    * [ ] 문제점: [1:0]으로 인풋을 넣어줘도 ModelSim에서는 1bit으로 인식함
+- [ ]   jr
+    * 03e00008 	(jr	ra)
 - [ ]   sltu
+    * 0062102b 	(sltu	v0,v1,v0)
 - [ ]   bnez
-- [ ]   move (?)
+    * 1440fff7 	(bnez	v0,38 \<SevenSeg+0x28\>)
+- [x]   move
+    * add랑 같음

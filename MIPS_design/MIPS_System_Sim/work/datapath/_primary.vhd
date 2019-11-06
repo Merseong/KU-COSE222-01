@@ -8,8 +8,8 @@ entity datapath is
         shiftl16        : in     vl_logic;
         memtoreg        : in     vl_logic;
         pcsrc           : in     vl_logic;
-        alusrc          : in     vl_logic;
-        regdst          : in     vl_logic;
+        alusrc          : in     vl_logic_vector(1 downto 0);
+        regdst          : in     vl_logic_vector(1 downto 0);
         regwrite        : in     vl_logic;
         jump            : in     vl_logic;
         alucontrol      : in     vl_logic_vector(2 downto 0);

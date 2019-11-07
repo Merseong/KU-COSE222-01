@@ -11,7 +11,7 @@ entity maindec is
         alusrc          : out    vl_logic_vector(1 downto 0);
         regdst          : out    vl_logic_vector(1 downto 0);
         regwrite        : out    vl_logic;
-        jump            : out    vl_logic;
+        jump            : out    vl_logic_vector(1 downto 0);
         aluop           : out    vl_logic_vector(1 downto 0)
     );
 end maindec;

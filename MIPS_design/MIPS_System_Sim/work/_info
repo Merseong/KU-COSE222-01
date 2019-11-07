@@ -36,9 +36,9 @@ R2
 r1
 !s85 0
 31
-Z22 !s108 1573013445.485000
+Z22 !s108 1573114015.645000
 Z23 !s107 C:/Users/Merseong/Documents/GitProjects/KU-COSE222-01/MIPS_design/MIPS_System/MIPS_CPU/mipsparts.v|
-Z24 !s90 -reportprogress|30|-work|work|C:/Users/Merseong/Documents/GitProjects/KU-COSE222-01/MIPS_design/MIPS_System/MIPS_CPU/mipsparts.v|
+Z24 !s90 -reportprogress|300|-work|work|C:/Users/Merseong/Documents/GitProjects/KU-COSE222-01/MIPS_design/MIPS_System/MIPS_CPU/mipsparts.v|
 !s101 -O0
 R12
 vadder_1bit
@@ -788,22 +788,22 @@ R24
 !s101 -O0
 R12
 valudec
-Z196 !s100 ^bC[7gHK<04EMX[LB;DXe2
-Z197 Ijd`6S7@MQm5<T8M07VA^@2
-Z198 VV@U_8;`LNAe8eO3WRWMD]1
+Z196 IRO<Pbf];k>MR6AG85m0Kj2
+Z197 VZ:nDB<_coHgOY4Q07QWF`0
 R17
-Z199 w1573013441
-Z200 8C:/Users/Merseong/Documents/GitProjects/KU-COSE222-01/MIPS_design/MIPS_System/MIPS_CPU/mips.v
-Z201 FC:/Users/Merseong/Documents/GitProjects/KU-COSE222-01/MIPS_design/MIPS_System/MIPS_CPU/mips.v
-Z202 L0 135
+Z198 w1573113812
+Z199 8C:/Users/Merseong/Documents/GitProjects/KU-COSE222-01/MIPS_design/MIPS_System/MIPS_CPU/mips.v
+Z200 FC:/Users/Merseong/Documents/GitProjects/KU-COSE222-01/MIPS_design/MIPS_System/MIPS_CPU/mips.v
+Z201 L0 139
 R2
 r1
 31
-Z203 !s108 1573013445.188000
-Z204 !s107 C:/Users/Merseong/Documents/GitProjects/KU-COSE222-01/MIPS_design/MIPS_System/MIPS_CPU/mips.v|
-Z205 !s90 -reportprogress|30|-work|work|C:/Users/Merseong/Documents/GitProjects/KU-COSE222-01/MIPS_design/MIPS_System/MIPS_CPU/mips.v|
+Z202 !s108 1573114015.414000
+Z203 !s107 C:/Users/Merseong/Documents/GitProjects/KU-COSE222-01/MIPS_design/MIPS_System/MIPS_CPU/mips.v|
+Z204 !s90 -reportprogress|300|-work|work|C:/Users/Merseong/Documents/GitProjects/KU-COSE222-01/MIPS_design/MIPS_System/MIPS_CPU/mips.v|
 R12
 !i10b 1
+Z205 !s100 <H=NoTlf897>LAB@>Wcl>2
 !s85 0
 !s101 -O0
 varm_m_cntr
@@ -921,20 +921,20 @@ Z229 !s100 4IYX:kd8X37Ao0??lCoVz0
 !s85 0
 !s101 -O0
 vcontroller
-Z230 !s100 W?0GN4jIj]kME3LKI<>;R1
-Z231 I2a?`3Ql99hRP[F<AXnC^K3
-Z232 VnVZ>DFFfD?GL3h81`<7i71
+Z230 !s100 Xe__aQ6aO;_oQigS6UolS1
+Z231 IN`]a8Al7H@5Pmz6VeeFj]2
+Z232 VKV9=kfln938_C`dl0BFYi1
 R17
+R198
 R199
 R200
-R201
-L0 64
+L0 65
 R2
 r1
 31
+R202
 R203
 R204
-R205
 R12
 !i10b 1
 !s85 0
@@ -959,22 +959,22 @@ Z236 !s100 oM6SDmEI:Kb0>54R]P0N91
 !s85 0
 !s101 -O0
 vdatapath
-Z237 !s100 RaVPNaeAnBNZ<aFj5@WEA0
-Z238 IgE[nZW3cElKFO7U_2IT692
-Z239 VUH>;j7Ld:]:fR:^f5be332
+Z237 I`okYHL>>;VX`JT=YNjejG1
+Z238 V>6`bLDHZD4^B0MRmejGk]3
 R17
+R198
 R199
 R200
-R201
-Z240 L0 159
+Z239 L0 174
 R2
 r1
 31
+R202
 R203
 R204
-R205
 R12
 !i10b 1
+Z240 !s100 NK>XdXQiV942XhHPf7]zY3
 !s85 0
 !s101 -O0
 vdcfifo
@@ -1913,22 +1913,22 @@ Z449 !s100 @cTkCjmWWi=KdzlaPdDkB1
 !s85 0
 !s101 -O0
 vmaindec
-Z450 !s100 _EH5I9HaK9g?jzn`:E^k@0
-Z451 If=6IjU:247Q63K0o22QS@2
-Z452 V>z94eSb3knGfVR4D0@zH40
+Z450 Izf0=9PH<XJ6LonZ_TcDb;2
+Z451 Vk[o[F7mUNSL_OW5lF[hf51
 R17
+R198
 R199
 R200
-R201
-Z453 L0 102
+Z452 L0 106
 R2
 r1
 31
+R202
 R203
 R204
-R205
 R12
 !i10b 1
+Z453 !s100 <M?@_h7<]k]Ig<XONFY=D1
 !s85 0
 !s101 -O0
 vMF_cycloneiii_pll
@@ -2112,22 +2112,22 @@ Z498 !s100 ZYj?i01o?R3d^bjMaElg^0
 !s85 0
 !s101 -O0
 vmips
-Z499 !s100 GG3ZL518TXQcN7b`bMNHd3
-Z500 I2GRIfncnn;MeA:abA2WYm1
-Z501 VPW[Ak9MzbjZ_[1j_DcWOj3
+Z499 I_=k>H05[2J>k05b6JE1M^2
+Z500 VPW[Ak9MzbjZ_[1j_DcWOj3
 R17
+R198
 R199
 R200
-R201
 L0 11
 R2
 r1
 31
+R202
 R203
 R204
-R205
 R12
 !i10b 1
+Z501 !s100 [V[;Odme6L1;g9Hk[Dc340
 !s85 0
 !s101 -O0
 vMIPS_System

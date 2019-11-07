@@ -76,7 +76,7 @@ module controller(input  [5:0] op, funct,
 
   wire [1:0] aluop;
   wire [1:0] jumptemp;
-  wire       branch;
+  wire [1:0] branch;
 
   maindec md(
     .op       (op),
@@ -98,7 +98,7 @@ module controller(input  [5:0] op, funct,
 	 .jump       (jump),
     .alucontrol (alucontrol));
 
-  assign pcsrc = branch & zero;
+  assign pcsrc = branch[0] & zero | branch[1] & !zero; // be careful for branch is 2'b11
 
 endmodule
 
@@ -107,31 +107,32 @@ module maindec(input  [5:0] op,
                output       signext,
                output       shiftl16,
                output       memtoreg, memwrite,
-               output       branch, 
+               output [1:0] branch, 
                output [1:0] alusrc,
                output [1:0] regdst, 
                output       regwrite,
                output [1:0] jump,
                output [1:0] aluop);
 
-  reg [13:0] controls;
+  reg [14:0] controls;
 
   assign {signext, shiftl16, regwrite, regdst, alusrc, branch, memwrite,
           memtoreg, jump, aluop} = controls;
 
   always @(*)
     case(op)
-      6'b000000: controls <= #`mydelay 14'b0_0_1_01_00_0_0_0_00_11; // Rtype
-      6'b100011: controls <= #`mydelay 14'b1_0_1_00_01_0_0_1_00_00; // LW
-      6'b101011: controls <= #`mydelay 14'b1_0_0_00_01_0_1_0_00_00; // SW
-      6'b000100: controls <= #`mydelay 14'b1_0_0_00_00_1_0_0_00_01; // BEQ
+      6'b000000: controls <= #`mydelay 15'b0_0_1_01_00_00_0_0_00_11; // Rtype
+      6'b100011: controls <= #`mydelay 15'b1_0_1_00_01_00_0_1_00_00; // LW
+      6'b101011: controls <= #`mydelay 15'b1_0_0_00_01_00_1_0_00_00; // SW
+      6'b000100: controls <= #`mydelay 15'b1_0_0_00_00_01_0_0_00_01; // BEQ
+		6'b000101: controls <= #`mydelay 15'b1_0_0_00_00_10_0_0_00_01; // BNE
       6'b001000, 
-      6'b001001: controls <= #`mydelay 14'b1_0_1_00_01_0_0_0_00_00; // ADDI, ADDIU: only difference is exception
-      6'b001101: controls <= #`mydelay 14'b0_0_1_00_01_0_0_0_00_10; // ORI
-      6'b001111: controls <= #`mydelay 14'b0_1_1_00_01_0_0_0_00_00; // LUI
-      6'b000010: controls <= #`mydelay 14'b0_0_0_00_00_0_0_0_01_00; // J
-      6'b000011: controls <= #`mydelay 14'b0_0_1_10_10_0_0_0_01_10; // JAL
-      default:   controls <= #`mydelay 14'bxxxxxxxxxxxxxx; // ???
+      6'b001001: controls <= #`mydelay 15'b1_0_1_00_01_00_0_0_00_00; // ADDI, ADDIU: only difference is exception
+      6'b001101: controls <= #`mydelay 15'b0_0_1_00_01_00_0_0_00_10; // ORI
+      6'b001111: controls <= #`mydelay 15'b0_1_1_00_01_00_0_0_00_00; // LUI
+      6'b000010: controls <= #`mydelay 15'b0_0_0_00_00_00_0_0_01_00; // J
+      6'b000011: controls <= #`mydelay 15'b0_0_1_10_10_00_0_0_01_10; // JAL
+      default:   controls <= #`mydelay 15'bxxxxxxxxxxxxxxx; // ???
     endcase
 
 endmodule

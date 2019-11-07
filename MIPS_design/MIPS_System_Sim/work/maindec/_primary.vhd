@@ -7,7 +7,7 @@ entity maindec is
         shiftl16        : out    vl_logic;
         memtoreg        : out    vl_logic;
         memwrite        : out    vl_logic;
-        branch          : out    vl_logic;
+        branch          : out    vl_logic_vector(1 downto 0);
         alusrc          : out    vl_logic_vector(1 downto 0);
         regdst          : out    vl_logic_vector(1 downto 0);
         regwrite        : out    vl_logic;

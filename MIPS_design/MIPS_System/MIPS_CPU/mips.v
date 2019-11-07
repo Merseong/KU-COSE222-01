@@ -22,7 +22,7 @@ module mips(input         clk, reset,
   wire [1:0]  regdst; 
   wire		  regwrite;
   wire [1:0]  jump;
-  wire [2:0]  alucontrol;
+  wire [3:0]  alucontrol;
 
   // Instantiate Controller
   controller c(
@@ -72,7 +72,7 @@ module controller(input  [5:0] op, funct,
                   output [1:0] regdst, 
                   output       regwrite,
                   output [1:0] jump,
-                  output [2:0] alucontrol);
+                  output [3:0] alucontrol);
 
   wire [1:0] aluop;
   wire [1:0] jumptemp;
@@ -140,33 +140,34 @@ module aludec(input      [5:0] funct,
               input      [1:0] aluop,
 				  input      [1:0] jumptemp,
 				  output     [1:0] jump,
-              output reg [2:0] alucontrol);
+              output reg [3:0] alucontrol);
 				  
-  reg [4:0] controls;
-  wire [2:0] alucontroltemp;
+  reg [5:0] controls;
+  wire [3:0] alucontroltemp;
 
   assign {alucontroltemp, jump} = controls;
 
   always @(*)
   begin
 	 case(aluop)
-		2'b00: controls <= #`mydelay {3'b010, jumptemp[1:0]};  // add
-		2'b01: controls <= #`mydelay {3'b110, jumptemp[1:0]};  // sub
-		2'b10: controls <= #`mydelay {3'b001, jumptemp[1:0]};  // or
+		2'b00: controls <= #`mydelay {4'b0010, jumptemp[1:0]};  // add
+		2'b01: controls <= #`mydelay {4'b1010, jumptemp[1:0]};  // sub
+		2'b10: controls <= #`mydelay {4'b0001, jumptemp[1:0]};  // or
 		default: case(funct)          // RTYPE
-			 6'b000000: controls <= #`mydelay {3'b001, jumptemp[1:0]}; // NOP
-			 6'b001000: controls <= #`mydelay 3'b001_10; // JR
+			 6'b000000: controls <= #`mydelay {4'b0001, jumptemp[1:0]}; // NOP
+			 6'b001000: controls <= #`mydelay 6'b0001_10; // JR
 			 6'b100000,
-			 6'b100001: controls <= #`mydelay {3'b010, jumptemp[1:0]}; // ADD, ADDU: only difference is exception
+			 6'b100001: controls <= #`mydelay {4'b0010, jumptemp[1:0]}; // ADD, ADDU: only difference is exception
 			 6'b100010,
-			 6'b100011: controls <= #`mydelay {3'b110, jumptemp[1:0]}; // SUB, SUBU: only difference is exception
-			 6'b100100: controls <= #`mydelay {3'b000, jumptemp[1:0]}; // AND
-			 6'b100101: controls <= #`mydelay {3'b001, jumptemp[1:0]}; // OR
-			 6'b101010: controls <= #`mydelay {3'b111, jumptemp[1:0]}; // SLT
-			 default:   controls <= #`mydelay {3'bxxx, jumptemp[1:0]}; // ???
+			 6'b100011: controls <= #`mydelay {4'b1010, jumptemp[1:0]}; // SUB, SUBU: only difference is exception
+			 6'b100100: controls <= #`mydelay {4'b0000, jumptemp[1:0]}; // AND
+			 6'b100101: controls <= #`mydelay {4'b0001, jumptemp[1:0]}; // OR
+			 6'b101010: controls <= #`mydelay {4'b1011, jumptemp[1:0]}; // SLT
+			 6'b101011: controls <= #`mydelay {4'b1100, jumptemp[1:0]}; // SLTU
+			 default:   controls <= #`mydelay {4'bxxxx, jumptemp[1:0]}; // ???
 		endcase
 	 endcase
-	 alucontrol <= #`mydelay alucontroltemp[2:0];
+	 alucontrol <= #`mydelay alucontroltemp[3:0];
   end
 
 endmodule
@@ -178,7 +179,7 @@ module datapath(input         clk, reset,
                 input  [1:0]  alusrc, regdst,
                 input         regwrite, 
 					 input  [1:0]  jump,
-                input  [2:0]  alucontrol,
+                input  [3:0]  alucontrol,
                 output        zero,
                 output [31:0] pc,
                 input  [31:0] instr,

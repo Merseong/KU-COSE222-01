@@ -6,6 +6,6 @@ entity aludec is
         aluop           : in     vl_logic_vector(1 downto 0);
         jumptemp        : in     vl_logic_vector(1 downto 0);
         jump            : out    vl_logic_vector(1 downto 0);
-        alucontrol      : out    vl_logic_vector(2 downto 0)
+        alucontrol      : out    vl_logic_vector(3 downto 0)
     );
 end aludec;

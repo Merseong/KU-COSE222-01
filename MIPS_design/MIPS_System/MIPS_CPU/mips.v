@@ -186,44 +186,63 @@ module datapath(input         clk, reset,
                 input  [31:0] instr,
                 output [31:0] aluout, writedata,
                 input  [31:0] readdata);
-					 
-  assign writedata = writedata_mem;
-  assign zero = zero_mem;
-  assign aluout = aluout_mem;
 
-  wire [4:0]  writereg;
-  wire [31:0] pcnext, pcnextbr, pcbranch;
+  wire [31:0] pcnext, pcnextbr;
   wire [31:0] signimmsh, shiftedimm;
-  wire [31:0] srca, srcb;
+  wire [31:0] srcb;
   wire [31:0] result;
-  wire        shift;
+//wire        shift;
   wire [4:0]  ra1;
   
+  // if out
   wire [31:0] pcplus4_if;
 //wire [31:0] instr_if == instr;
   
+  // id in
   wire [31:0] pcplus4_id;
   wire [31:0] instr_id;
+  // id out
   wire [31:0] writedata_id;
   wire [31:0] srca_id;
   wire [31:0] signimm_id;
+  wire [4:0]  instr_d0_id;
+  wire [4:0]  instr_d1_id;
   
+  // ex in
   wire [31:0] pcplus4_ex;
   wire [31:0] srca_ex;
-  wire [31:0] writedata_ex;
   wire [31:0] signimm_ex;
+  wire [4:0]  instr_d0_ex;
+  wire [4:0]  instr_d1_ex;
+  // ex in-out
+  wire [31:0] writedata_ex;
+  // ex out
   wire [31:0] pcbranch_ex;
   wire        zero_ex;
   wire [31:0] aluout_ex;
+  wire [4:0]  writereg_ex;
   
+  // mem in
   wire [31:0] pcbranch_mem;
   wire        zero_mem;
-  wire [31:0] aluout_mem;
   wire [31:0] writedata_mem;
+  // mem in-out
+  wire [31:0] aluout_mem;
+  wire [4:0]  writereg_mem;
+  // mem out
   wire [31:0] memreaddata_mem;
   
+  // wb in
   wire [31:0] memreaddata_wb;
   wire [31:0] aluout_wb;
+  wire [4:0]  writereg_wb;
+  
+  assign writedata = writedata_mem;
+  assign zero = zero_mem;
+  assign aluout = aluout_mem;
+  assign memreaddata_mem = readdata;
+  assign instr_d0_id = instr_id[20:16];
+  assign instr_d1_id = instr_id[15:11];
   
   // for pipeline
   flopenr #(64) if_id(
@@ -233,26 +252,26 @@ module datapath(input         clk, reset,
 	 .d     ({pcplus4_if, instr}),
 	 .q     ({pcplus4_id, instr_id}));
 	 
-  flopenr #(128) id_ex(
+  flopenr #(138) id_ex(
     .clk   (clk),
 	 .reset (reset),
 	 .en    (1'b1),
-	 .d     ({pcplus4_id, srca_id, writedata_id, signimm_id}),
-	 .q     ({pcplus4_ex, srca_ex, writedata_ex, signimm_ex}));
+	 .d     ({pcplus4_id, srca_id, writedata_id, signimm_id, instr_d0_id, instr_d1_id}),
+	 .q     ({pcplus4_ex, srca_ex, writedata_ex, signimm_ex, instr_d0_ex, instr_d1_ex}));
 	 
-  flopenr #(97) ex_mem(
+  flopenr #(102) ex_mem(
     .clk   (clk),
 	 .reset (reset),
 	 .en    (1'b1),
-	 .d     ({pcbranch_ex, zero_ex, aluout_ex, writedata_ex}),
-	 .q     ({pcbranch_mem, zero_mem, aluout_mem, writedata_mem}));
+	 .d     ({pcbranch_ex, zero_ex, aluout_ex, writedata_ex, writereg_ex}),
+	 .q     ({pcbranch_mem, zero_mem, aluout_mem, writedata_mem, writereg_mem}));
 	 
-  flopenr #(64) mem_wb(
+  flopenr #(69) mem_wb(
     .clk   (clk),
 	 .reset (reset),
 	 .en    (1'b1),
-	 .d     ({memreaddata_mem, aluout_mem}),
-	 .q     ({memreaddata_wb, aluout_wb}));
+	 .d     ({memreaddata_mem, aluout_mem, writereg_mem}),
+	 .q     ({memreaddata_wb, aluout_wb, writereg_wb}));
 
   // next PC logic
   flopr #(32) pcreg(
@@ -277,7 +296,7 @@ module datapath(input         clk, reset,
 
   mux2 #(32) pcbrmux(
     .d0  (pcplus4_if),
-    .d1  (pcbranch_ex),
+    .d1  (pcbranch_mem),
     .s   (pcsrc),
     .y   (pcnextbr));
 
@@ -295,7 +314,7 @@ module datapath(input         clk, reset,
     .we      (regwrite),
     .ra1     (ra1),
     .ra2     (instr_id[20:16]),
-    .wa      (writereg),
+    .wa      (writereg_wb),
     .wd      (result),
     .rd1     (srca_id),
     .rd2     (writedata_id));
@@ -307,16 +326,16 @@ module datapath(input         clk, reset,
     .y	(ra1));
 
   mux4 #(5) wrmux(
-    .d0  (instr_id[20:16]),
-    .d1  (instr_id[15:11]),
+    .d0  (instr_d0_ex),
+    .d1  (instr_d1_ex),
     .d2  (5'b11111), // $31
     .d3  (5'b00001),
     .s   (regdst),
-    .y   (writereg));
+    .y   (writereg_ex));
 
   mux2 #(32) resmux(
     .d0 (aluout_wb),
-    .d1 (readdata_wb),
+    .d1 (memreaddata_wb),
     .s  (memtoreg),
     .y  (result));
 

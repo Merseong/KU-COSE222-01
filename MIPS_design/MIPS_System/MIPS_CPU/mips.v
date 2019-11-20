@@ -16,62 +16,62 @@ module mips(input         clk, reset,
             output [31:0] memwritedata,
             input  [31:0] memreaddata);
 
-  wire        signext, shiftl16, memtoreg, branch;
+  wire        signext, shiftl16;
+  wire [1:0]  branch;
   wire        pcsrc, zero;
-  wire [1:0]  alusrc;
-  wire [1:0]  regdst; 
-  wire		  regwrite;
   wire [1:0]  jump;
   wire [3:0]  alucontrol;
+  wire [5:0]  ex_control;
+  wire [2:0]  mem_control;
+  wire [1:0]  wb_control;
+  wire [5:0] op_id;
+  wire [5:0] funct_ex;
+  wire [1:0] aluop_ex;
 
   // Instantiate Controller
   controller c(
-    .op         (instr[31:26]), 
-		.funct      (instr[5:0]), 
-		.zero       (zero),
-		.signext    (signext),
-		.shiftl16   (shiftl16),
-		.memtoreg   (memtoreg),
-		.memwrite   (memwrite),
-		.pcsrc      (pcsrc),
-		.alusrc     (alusrc),
-		.regdst     (regdst),
-		.regwrite   (regwrite),
-		.jump       (jump),
-		.alucontrol (alucontrol));
+    .op_id         (op_id),
+		.funct_ex      (funct_ex), 
+    .aluop_ex      (aluop_ex),
+		.signext       (signext),
+		.shiftl16      (shiftl16),
+		.jump          (jump),
+    .ex_control    (ex_control),
+		.mem_control   (mem_control),
+		.wb_control    (wb_control),
+		.alucontrol    (alucontrol));
 
   // Instantiate Datapath
   datapath dp(
-    .clk        (clk),
-    .reset      (reset),
-    .signext    (signext),
-    .shiftl16   (shiftl16),
-    .memtoreg   (memtoreg),
-    .pcsrc      (pcsrc),
-    .alusrc     (alusrc),
-    .regdst     (regdst),
-    .regwrite   (regwrite),
-    .jump       (jump),
-    .alucontrol (alucontrol),
-    .zero       (zero),
-    .pc         (pc),
-    .instr      (instr),
-    .aluout     (memaddr), 
-    .writedata  (memwritedata),
-    .readdata   (memreaddata));
+    .clk              (clk),
+    .reset            (reset),
+    .signext          (signext),
+    .shiftl16         (shiftl16),
+    .jump             (jump),
+    .ex_control_id    (ex_control),
+    .mem_control_id   (mem_control),
+    .wb_control_id    (wb_control),
+    .alucontrol_exin  (alucontrol),
+    .instr_ifin       (instr),
+    .op_idout         (op_id),
+    .funct_exout      (funct_ex),
+    .aluop_exout      (aluop_ex),
+    .pc               (pc),
+    .aluout           (memaddr), 
+    .writedata        (memwritedata),
+    .memwrite         (memwrite),
+    .readdata         (memreaddata));
 
 endmodule
 
-module controller(input  [5:0] op, funct,
-                  input        zero,
+module controller(input  [5:0] op_id, funct_ex,
+                  input  [1:0] aluop_ex,
                   output       signext,
                   output       shiftl16,
-                  output       memtoreg, memwrite,
-                  output       pcsrc, 
-                  output [1:0] alusrc,
-                  output [1:0] regdst, 
-                  output       regwrite,
                   output [1:0] jump,
+                  output [5:0] ex_control,
+                  output [2:0] mem_control,
+                  output [1:0] wb_control,
                   output [3:0] alucontrol);
 
   wire [1:0] aluop;
@@ -79,45 +79,65 @@ module controller(input  [5:0] op, funct,
   wire [1:0] branch;
 
   maindec md(
-    .op       (op),
-    .signext  (signext),
-    .shiftl16 (shiftl16),
-    .memtoreg (memtoreg),
-    .memwrite (memwrite),
-    .branch   (branch),
-    .alusrc   (alusrc),
-    .regdst   (regdst),
-    .regwrite (regwrite),
-    .jump     (jumptemp),
-    .aluop    (aluop));
+    .op         (op),
+    .signext    (signext),
+    .shiftl16   (shiftl16),
+    .jump       (jumptemp),
+    .ex_control (ex_control),
+	  .mem_control(mem_control),
+	  .wb_control (wb_control));
 
   aludec ad( 
-    .funct      (funct),
-    .aluop      (aluop),
-	 .jumptemp   (jumptemp),
-	 .jump       (jump),
+    .funct      (funct_ex),
+    .aluop      (aluop_ex),
+	  .jumptemp   (jumptemp),
+	  .jump       (jump),
     .alucontrol (alucontrol));
-
-  assign pcsrc = branch[0] & zero | branch[1] & !zero; // be careful for branch is 2'b11
 
 endmodule
 
 
 module maindec(input  [5:0] op,
-               output       signext,
-               output       shiftl16,
-               output       memtoreg, memwrite,
-               output [1:0] branch, 
-               output [1:0] alusrc,
-               output [1:0] regdst, 
-               output       regwrite,
-               output [1:0] jump,
-               output [1:0] aluop);
+               output [5:0] ex_control,
+					output [2:0] mem_control,
+					output [1:0] wb_control,
+					output [1:0] jump,
+					output       signext,
+					output       shiftl16);
 
-  reg [14:0] controls;
+  reg  [14:0] controls;
+  
+  // other
+  //wire        signext;
+  //wire        shiftl16;
+  //wire [1:0]  jump;
+  // ex
+  wire [1:0]  alusrc;
+  wire [1:0]  aluop;
+  wire [1:0]  regdst; 
+  // mem
+  wire        regwrite;
+  wire [1:0]  branch;
+  // wb
+  wire        memtoreg, memwrite;
 
   assign {signext, shiftl16, regwrite, regdst, alusrc, branch, memwrite,
           memtoreg, jump, aluop} = controls;
+			 
+  /*
+  regdst = ex_control[5:4]
+  aluop = ex_control[3:2]
+  alusrc = ex_control[1:0]
+  
+  memwrite = mem_control[2]
+  branch = mem_control[1:0]
+  
+  memtoreg = wb_control[1]
+  regwrite = wb_control[0]
+  */
+  assign ex_control = {regdst, aluop, alusrc};
+  assign mem_control = {memwrite, branch};
+  assign wb_control = {memtoreg, regwrite};
 
   always @(*)
     case(op)
@@ -125,7 +145,7 @@ module maindec(input  [5:0] op,
       6'b100011: controls <= #`mydelay 15'b1_0_1_00_01_00_0_1_00_00; // LW
       6'b101011: controls <= #`mydelay 15'b1_0_0_00_01_00_1_0_00_00; // SW
       6'b000100: controls <= #`mydelay 15'b1_0_0_00_00_01_0_0_00_01; // BEQ
-		6'b000101: controls <= #`mydelay 15'b1_0_0_00_00_10_0_0_00_01; // BNE
+      6'b000101: controls <= #`mydelay 15'b1_0_0_00_00_10_0_0_00_01; // BNE
       6'b001000, 
       6'b001001: controls <= #`mydelay 15'b1_0_1_00_01_00_0_0_00_00; // ADDI, ADDIU: only difference is exception
       6'b001101: controls <= #`mydelay 15'b0_0_1_00_01_00_0_0_00_10; // ORI
@@ -139,8 +159,8 @@ endmodule
 
 module aludec(input      [5:0] funct,
               input      [1:0] aluop,
-				  input      [1:0] jumptemp,
-				  output     [1:0] jump,
+              input      [1:0] jumptemp,
+              output     [1:0] jump,
               output reg [3:0] alucontrol);
 				  
   reg [5:0] controls;
@@ -175,16 +195,19 @@ endmodule
 
 module datapath(input         clk, reset,
                 input         signext,
-                input         shiftl16,
-                input         memtoreg, pcsrc,
-                input  [1:0]  alusrc, regdst,
-                input         regwrite, 
-					 input  [1:0]  jump,
-                input  [3:0]  alucontrol,
-                output        zero,
+                input         shiftl16, 
+                input  [1:0]  jump,
+                input  [5:0]  ex_control_id,
+                input  [2:0]  mem_control_id,
+                input  [1:0]  wb_control_id,
+                input  [3:0]  alucontrol_exin,
+                input  [31:0] instr_ifin,
+                output [5:0]  op_idout,
+                output [5:0]  funct_exout,
+                output [1:0]  aluop_exout,
                 output [31:0] pc,
-                input  [31:0] instr,
                 output [31:0] aluout, writedata,
+                output        memwrite,
                 input  [31:0] readdata);
 
   wire [31:0] pcnext, pcnextbr;
@@ -193,6 +216,7 @@ module datapath(input         clk, reset,
   wire [31:0] result;
 //wire        shift;
   wire [4:0]  ra1;
+  wire        pcsrc;
   
   // if out
   wire [31:0] pcplus4_if;
@@ -214,8 +238,11 @@ module datapath(input         clk, reset,
   wire [31:0] signimm_ex;
   wire [4:0]  instr_d0_ex;
   wire [4:0]  instr_d1_ex;
+  wire [5:0]  ex_control_ex;
   // ex in-out
   wire [31:0] writedata_ex;
+  wire [2:0]  mem_control_ex;
+  wire [1:0]  wb_control_ex;
   // ex out
   wire [31:0] pcbranch_ex;
   wire        zero_ex;
@@ -224,11 +251,13 @@ module datapath(input         clk, reset,
   
   // mem in
   wire [31:0] pcbranch_mem;
-  wire        zero_mem;
   wire [31:0] writedata_mem;
+  wire        zero_mem;
+  wire [2:0]  mem_control_mem;
   // mem in-out
   wire [31:0] aluout_mem;
   wire [4:0]  writereg_mem;
+  wire [1:0]  wb_control_mem;
   // mem out
   wire [31:0] memreaddata_mem;
   
@@ -236,6 +265,7 @@ module datapath(input         clk, reset,
   wire [31:0] memreaddata_wb;
   wire [31:0] aluout_wb;
   wire [4:0]  writereg_wb;
+  wire [1:0]  wb_control_wb;
   
   assign writedata = writedata_mem;
   assign zero = zero_mem;
@@ -243,35 +273,41 @@ module datapath(input         clk, reset,
   assign memreaddata_mem = readdata;
   assign instr_d0_id = instr_id[20:16];
   assign instr_d1_id = instr_id[15:11];
+  assign op_idout = instr_id[5:0];
+  assign funct_exout = signimm_ex[5:0];
+  assign aluop_exout = ex_control_ex[3:2];
+  assign pcsrc = mem_control_mem[0] & zero_mem | mem_control_mem[1] & !zero_mem; // be careful for branch is 2'b11
+  assign memwrite = mem_control_mem[2];
   
+  // 여기 이제 컨트롤러 이어줘야됨
   // for pipeline
   flopenr #(64) if_id(
     .clk   (clk),
-	 .reset (reset),
-	 .en    (1'b1),
-	 .d     ({pcplus4_if, instr}),
-	 .q     ({pcplus4_id, instr_id}));
+	  .reset (reset),
+	  .en    (1'b1),
+	  .d     ({pcplus4_if, instr}),
+	  .q     ({pcplus4_id, instr_id}));
 	 
   flopenr #(138) id_ex(
     .clk   (clk),
-	 .reset (reset),
-	 .en    (1'b1),
-	 .d     ({pcplus4_id, srca_id, writedata_id, signimm_id, instr_d0_id, instr_d1_id}),
-	 .q     ({pcplus4_ex, srca_ex, writedata_ex, signimm_ex, instr_d0_ex, instr_d1_ex}));
+	  .reset (reset),
+	  .en    (1'b1),
+	  .d     ({pcplus4_id, srca_id, writedata_id, signimm_id, instr_d0_id, instr_d1_id}),
+	  .q     ({pcplus4_ex, srca_ex, writedata_ex, signimm_ex, instr_d0_ex, instr_d1_ex}));
 	 
   flopenr #(102) ex_mem(
     .clk   (clk),
-	 .reset (reset),
-	 .en    (1'b1),
-	 .d     ({pcbranch_ex, zero_ex, aluout_ex, writedata_ex, writereg_ex}),
-	 .q     ({pcbranch_mem, zero_mem, aluout_mem, writedata_mem, writereg_mem}));
+	  .reset (reset),
+	  .en    (1'b1),
+	  .d     ({pcbranch_ex, zero_ex, aluout_ex, writedata_ex, writereg_ex}),
+	  .q     ({pcbranch_mem, zero_mem, aluout_mem, writedata_mem, writereg_mem}));
 	 
   flopenr #(69) mem_wb(
     .clk   (clk),
-	 .reset (reset),
-	 .en    (1'b1),
-	 .d     ({memreaddata_mem, aluout_mem, writereg_mem}),
-	 .q     ({memreaddata_wb, aluout_wb, writereg_wb}));
+	  .reset (reset),
+	  .en    (1'b1),
+	  .d     ({memreaddata_mem, aluout_mem, writereg_mem}),
+	  .q     ({memreaddata_wb, aluout_wb, writereg_wb}));
 
   // next PC logic
   flopr #(32) pcreg(
@@ -303,15 +339,15 @@ module datapath(input         clk, reset,
   mux4 #(32) pcmux(
     .d0   (pcnextbr),
     .d1   ({pcplus4_ex[31:28], instr_id[25:0], 2'b00}),
-	 .d2   (aluout_mem),
-	 .d3   (32'b0),
+	  .d2   (aluout_mem),
+	  .d3   (32'b0),
     .s    (jump),
     .y    (pcnext));
 
   // register file logic
   regfile rf(
     .clk     (clk),
-    .we      (regwrite),
+    .we      (wb_control_wb[0]),
     .ra1     (ra1),
     .ra2     (instr_id[20:16]),
     .wa      (writereg_wb),
@@ -322,7 +358,7 @@ module datapath(input         clk, reset,
   mux2 #(5) zeromux(
     .d0	(instr_id[25:21]),
     .d1	(5'b00000),
-    .s	(alusrc[1]),
+    .s	(ex_control_ex[1]),
     .y	(ra1));
 
   mux4 #(5) wrmux(
@@ -330,13 +366,13 @@ module datapath(input         clk, reset,
     .d1  (instr_d1_ex),
     .d2  (5'b11111), // $31
     .d3  (5'b00001),
-    .s   (regdst),
+    .s   (ex_control_ex[5:4]),
     .y   (writereg_ex));
 
   mux2 #(32) resmux(
     .d0 (aluout_wb),
     .d1 (memreaddata_wb),
-    .s  (memtoreg),
+    .s  (wb_control_wb[1]),
     .y  (result));
 
   sign_zero_ext sze(
@@ -355,13 +391,13 @@ module datapath(input         clk, reset,
     .d1 (shiftedimm[31:0]),
     .d2 (pcplus4_ex),
     .d3 (32'b0),
-    .s  (alusrc),
+    .s  (ex_control_ex[1:0]),
     .y  (srcb));
 
   alu alu(
     .a       (srca_ex),
     .b       (srcb),
-    .alucont (alucontrol),
+    .alucont (alucontrol_exin),
     .result  (aluout_ex),
     .zero    (zero_ex));
     

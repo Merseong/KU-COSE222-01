@@ -79,7 +79,7 @@ module controller(input  [5:0] op_id, funct_ex,
   wire [1:0] branch;
 
   maindec md(
-    .op         (op),
+    .op         (op_id),
     .signext    (signext),
     .shiftl16   (shiftl16),
     .jump       (jumptemp),
@@ -268,7 +268,6 @@ module datapath(input         clk, reset,
   wire [1:0]  wb_control_wb;
   
   assign writedata = writedata_mem;
-  assign zero = zero_mem;
   assign aluout = aluout_mem;
   assign memreaddata_mem = readdata;
   assign instr_d0_id = instr_id[20:16];
@@ -285,29 +284,29 @@ module datapath(input         clk, reset,
     .clk   (clk),
 	  .reset (reset),
 	  .en    (1'b1),
-	  .d     ({pcplus4_if, instr}),
+	  .d     ({pcplus4_if, instr_ifin}),
 	  .q     ({pcplus4_id, instr_id}));
 	 
-  flopenr #(138) id_ex(
+  flopenr #(149) id_ex(
     .clk   (clk),
 	  .reset (reset),
 	  .en    (1'b1),
-	  .d     ({pcplus4_id, srca_id, writedata_id, signimm_id, instr_d0_id, instr_d1_id}),
-	  .q     ({pcplus4_ex, srca_ex, writedata_ex, signimm_ex, instr_d0_ex, instr_d1_ex}));
+	  .d     ({pcplus4_id, srca_id, writedata_id, signimm_id, instr_d0_id, instr_d1_id, ex_control_id, mem_control_id, wb_control_id}),
+	  .q     ({pcplus4_ex, srca_ex, writedata_ex, signimm_ex, instr_d0_ex, instr_d1_ex, ex_control_ex, mem_control_ex, wb_control_ex}));
 	 
-  flopenr #(102) ex_mem(
+  flopenr #(107) ex_mem(
     .clk   (clk),
 	  .reset (reset),
 	  .en    (1'b1),
-	  .d     ({pcbranch_ex, zero_ex, aluout_ex, writedata_ex, writereg_ex}),
-	  .q     ({pcbranch_mem, zero_mem, aluout_mem, writedata_mem, writereg_mem}));
+	  .d     ({pcbranch_ex, zero_ex, aluout_ex, writedata_ex, writereg_ex, mem_control_ex, wb_control_ex}),
+	  .q     ({pcbranch_mem, zero_mem, aluout_mem, writedata_mem, writereg_mem, mem_control_mem, wb_control_mem}));
 	 
-  flopenr #(69) mem_wb(
+  flopenr #(71) mem_wb(
     .clk   (clk),
 	  .reset (reset),
 	  .en    (1'b1),
-	  .d     ({memreaddata_mem, aluout_mem, writereg_mem}),
-	  .q     ({memreaddata_wb, aluout_wb, writereg_wb}));
+	  .d     ({memreaddata_mem, aluout_mem, writereg_mem, wb_control_mem}),
+	  .q     ({memreaddata_wb, aluout_wb, writereg_wb, wb_control_wb}));
 
   // next PC logic
   flopr #(32) pcreg(

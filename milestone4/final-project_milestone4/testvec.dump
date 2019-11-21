@@ -1,0 +1,87 @@
+
+testvec:     file format elf32-bigmips
+testvec
+architecture: mips:isa32, flags 0x00000012:
+EXEC_P, HAS_SYMS
+start address 0x00000000
+
+Program Header:
+    LOAD off    0x00000060 vaddr 0x00000000 paddr 0x00000000 align 2**4
+         filesz 0x00000830 memsz 0x00000830 flags rwx
+private flags = 50000000: [no abi set] [mips32] [not 32bitmode]
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         000000b0  00000000  00000000  00000060  2**4
+                  CONTENTS, ALLOC, LOAD, CODE
+  1 .data         00000430  00000400  00000400  00000460  2**4
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .reginfo      00000018  00000000  00000000  00000890  2**2
+                  CONTENTS, READONLY, LINK_ONCE_SAME_SIZE
+SYMBOL TABLE:
+00000000 l    d  .text	00000000 .text
+00000400 l    d  .data	00000000 .data
+00000000 l    d  .reginfo	00000000 .reginfo
+00000000 l       .text	00000000 main
+00000424 l       .data	00000000 my_stack
+00000420 l       .data	00000000 SEG8
+000000a0 l       .text	00000000 forever
+00000400 l       .data	00000000 SEG0
+00000404 l       .data	00000000 SEG1
+00000408 l       .data	00000000 SEG2
+0000040c l       .data	00000000 SEG3
+00000410 l       .data	00000000 SEG4
+00000414 l       .data	00000000 SEG5
+00000418 l       .data	00000000 SEG6
+0000041c l       .data	00000000 SEG7
+
+
+
+Disassembly of section .text:
+
+00000000 <main>:
+   0:	20030800 	addi	v1,zero,2048
+   4:	00631820 	add	v1,v1,v1
+   8:	00631820 	add	v1,v1,v1
+   c:	3c02ffff 	lui	v0,0xffff
+  10:	00621025 	or	v0,v1,v0
+  14:	3c1d0000 	lui	sp,0x0
+  18:	27bd0424 	addiu	sp,sp,1060
+  1c:	afa20000 	sw	v0,0(sp)
+  20:	3c090000 	lui	t1,0x0
+  24:	25290420 	addiu	t1,t1,1056
+  28:	8d2a0000 	lw	t2,0(t1)
+  2c:	8fa30000 	lw	v1,0(sp)
+  30:	ac6a000c 	sw	t2,12(v1)
+  34:	8d2afffc 	lw	t2,-4(t1)
+  38:	8fa30000 	lw	v1,0(sp)
+  3c:	20630010 	addi	v1,v1,16
+  40:	ac6a0000 	sw	t2,0(v1)
+  44:	8fa30000 	lw	v1,0(sp)
+  48:	20630014 	addi	v1,v1,20
+  4c:	8d2afff8 	lw	t2,-8(t1)
+  50:	ac6a0000 	sw	t2,0(v1)
+  54:	8d2afff4 	lw	t2,-12(t1)
+  58:	20630004 	addi	v1,v1,4
+  5c:	ac6a0000 	sw	t2,0(v1)
+  60:	8d2afff0 	lw	t2,-16(t1)
+  64:	8fa30000 	lw	v1,0(sp)
+  68:	2063000c 	addi	v1,v1,12
+  6c:	ac6a0000 	sw	t2,0(v1)
+  70:	8d2affec 	lw	t2,-20(t1)
+  74:	20630004 	addi	v1,v1,4
+  78:	ac6a0000 	sw	t2,0(v1)
+  7c:	8d2affe8 	lw	t2,-24(t1)
+  80:	20040004 	addi	a0,zero,4
+  84:	00641820 	add	v1,v1,a0
+  88:	ac6a0000 	sw	t2,0(v1)
+  8c:	8d2affe4 	lw	t2,-28(t1)
+  90:	8fa30000 	lw	v1,0(sp)
+  94:	20630008 	addi	v1,v1,8
+  98:	20630010 	addi	v1,v1,16
+  9c:	ac6a0000 	sw	t2,0(v1)
+
+000000a0 <forever>:
+  a0:	08000028 	j	a0 <forever>
+  a4:	00000000 	nop
+	...

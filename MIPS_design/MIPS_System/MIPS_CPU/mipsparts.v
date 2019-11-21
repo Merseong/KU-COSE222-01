@@ -48,7 +48,7 @@ module regfile(input             clk,
 	reg [31:0] R30;
 	reg [31:0] R31;
 
-	always @(posedge clk)
+	always @(negedge clk)
 	begin
   	 if (we) 
 	 begin
@@ -182,7 +182,7 @@ module regfile(input         clk,
   // write third port on rising edge of clock
   // register 0 hardwired to 0
 
-  always @(posedge clk)
+  always @(negedge clk)
     if (we) rf[wa] <= #`mydelay wd;	
 
   assign #`mydelay rd1 = (ra1 != 0) ? rf[ra1] : 0;

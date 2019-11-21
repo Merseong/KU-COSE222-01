@@ -21,33 +21,32 @@ module mips(input         clk, reset,
   wire        pcsrc, zero;
   wire [1:0]  jump;
   wire [3:0]  alucontrol;
-  wire [5:0]  ex_control;
+  wire        id_control;
+  wire [6:0]  ex_control;
   wire [2:0]  mem_control;
   wire [1:0]  wb_control;
-  wire [5:0] op_id;
-  wire [5:0] funct_ex;
-  wire [1:0] aluop_ex;
+  wire [5:0]  op_id;
+  wire [5:0]  funct_ex;
+  wire [1:0]  aluop_ex;
 
   // Instantiate Controller
   controller c(
     .op_id         (op_id),
-		.funct_ex      (funct_ex), 
+    .funct_ex      (funct_ex), 
     .aluop_ex      (aluop_ex),
-		.signext       (signext),
-		.shiftl16      (shiftl16),
-		.jump          (jump),
+    .jump          (jump),
+    .id_control    (id_control),
     .ex_control    (ex_control),
-		.mem_control   (mem_control),
-		.wb_control    (wb_control),
-		.alucontrol    (alucontrol));
+    .mem_control   (mem_control),
+    .wb_control    (wb_control),
+    .alucontrol    (alucontrol));
 
   // Instantiate Datapath
   datapath dp(
     .clk              (clk),
     .reset            (reset),
-    .signext          (signext),
-    .shiftl16         (shiftl16),
     .jump             (jump),
+    .id_control_id    (id_control),
     .ex_control_id    (ex_control),
     .mem_control_id   (mem_control),
     .wb_control_id    (wb_control),
@@ -66,52 +65,45 @@ endmodule
 
 module controller(input  [5:0] op_id, funct_ex,
                   input  [1:0] aluop_ex,
-                  output       signext,
-                  output       shiftl16,
                   output [1:0] jump,
-                  output [5:0] ex_control,
+                  output       id_control,
+                  output [6:0] ex_control,
                   output [2:0] mem_control,
                   output [1:0] wb_control,
                   output [3:0] alucontrol);
 
-  wire [1:0] aluop;
-  wire [1:0] jumptemp;
-  wire [1:0] branch;
-
   maindec md(
     .op         (op_id),
-    .signext    (signext),
-    .shiftl16   (shiftl16),
     .jump       (jumptemp),
+    .id_control (id_control),
     .ex_control (ex_control),
-	  .mem_control(mem_control),
-	  .wb_control (wb_control));
+    .mem_control(mem_control),
+    .wb_control (wb_control));
 
   aludec ad( 
     .funct      (funct_ex),
     .aluop      (aluop_ex),
-	  .jumptemp   (jumptemp),
-	  .jump       (jump),
+    .jumptemp   (jumptemp),
+    .jump       (jump),
     .alucontrol (alucontrol));
 
 endmodule
 
 
 module maindec(input  [5:0] op,
-               output [5:0] ex_control,
-					output [2:0] mem_control,
-					output [1:0] wb_control,
-					output [1:0] jump,
-					output       signext,
-					output       shiftl16);
+               output       id_control,
+               output [6:0] ex_control,
+               output [2:0] mem_control,
+               output [1:0] wb_control,
+               output [1:0] jump);
 
   reg  [14:0] controls;
   
   // other
-  //wire        signext;
-  //wire        shiftl16;
+  wire        signext;
   //wire [1:0]  jump;
   // ex
+  wire        shiftl16;
   wire [1:0]  alusrc;
   wire [1:0]  aluop;
   wire [1:0]  regdst; 
@@ -123,8 +115,9 @@ module maindec(input  [5:0] op,
 
   assign {signext, shiftl16, regwrite, regdst, alusrc, branch, memwrite,
           memtoreg, jump, aluop} = controls;
-			 
+       
   /*
+  shiftl16 = ex_control[6]
   regdst = ex_control[5:4]
   aluop = ex_control[3:2]
   alusrc = ex_control[1:0]
@@ -135,7 +128,8 @@ module maindec(input  [5:0] op,
   memtoreg = wb_control[1]
   regwrite = wb_control[0]
   */
-  assign ex_control = {regdst, aluop, alusrc};
+  assign id_control = signext;
+  assign ex_control = {shiftl16, regdst, aluop, alusrc};
   assign mem_control = {memwrite, branch};
   assign wb_control = {memtoreg, regwrite};
 
@@ -162,7 +156,7 @@ module aludec(input      [5:0] funct,
               input      [1:0] jumptemp,
               output     [1:0] jump,
               output reg [3:0] alucontrol);
-				  
+          
   reg [5:0] controls;
   wire [3:0] alucontroltemp;
 
@@ -170,34 +164,33 @@ module aludec(input      [5:0] funct,
 
   always @(*)
   begin
-	 case(aluop)
-		2'b00: controls <= #`mydelay {4'b0010, jumptemp[1:0]};  // add
-		2'b01: controls <= #`mydelay {4'b1010, jumptemp[1:0]};  // sub
-		2'b10: controls <= #`mydelay {4'b0001, jumptemp[1:0]};  // or
-		default: case(funct)          // RTYPE
-			 6'b000000: controls <= #`mydelay {4'b0001, jumptemp[1:0]}; // NOP
-			 6'b001000: controls <= #`mydelay 6'b0001_10; // JR
-			 6'b100000,
-			 6'b100001: controls <= #`mydelay {4'b0010, jumptemp[1:0]}; // ADD, ADDU: only difference is exception
-			 6'b100010,
-			 6'b100011: controls <= #`mydelay {4'b1010, jumptemp[1:0]}; // SUB, SUBU: only difference is exception
-			 6'b100100: controls <= #`mydelay {4'b0000, jumptemp[1:0]}; // AND
-			 6'b100101: controls <= #`mydelay {4'b0001, jumptemp[1:0]}; // OR
-			 6'b101010: controls <= #`mydelay {4'b1011, jumptemp[1:0]}; // SLT
-			 6'b101011: controls <= #`mydelay {4'b1100, jumptemp[1:0]}; // SLTU
-			 default:   controls <= #`mydelay {4'bxxxx, jumptemp[1:0]}; // ???
-		endcase
-	 endcase
-	 alucontrol <= #`mydelay alucontroltemp[3:0];
+   case(aluop)
+    2'b00: controls <= #`mydelay {4'b0010, jumptemp[1:0]};  // add
+    2'b01: controls <= #`mydelay {4'b1010, jumptemp[1:0]};  // sub
+    2'b10: controls <= #`mydelay {4'b0001, jumptemp[1:0]};  // or
+    default: case(funct)          // RTYPE
+       6'b000000: controls <= #`mydelay {4'b0001, jumptemp[1:0]}; // NOP
+       6'b001000: controls <= #`mydelay 6'b0001_10; // JR
+       6'b100000,
+       6'b100001: controls <= #`mydelay {4'b0010, jumptemp[1:0]}; // ADD, ADDU: only difference is exception
+       6'b100010,
+       6'b100011: controls <= #`mydelay {4'b1010, jumptemp[1:0]}; // SUB, SUBU: only difference is exception
+       6'b100100: controls <= #`mydelay {4'b0000, jumptemp[1:0]}; // AND
+       6'b100101: controls <= #`mydelay {4'b0001, jumptemp[1:0]}; // OR
+       6'b101010: controls <= #`mydelay {4'b1011, jumptemp[1:0]}; // SLT
+       6'b101011: controls <= #`mydelay {4'b1100, jumptemp[1:0]}; // SLTU
+       default:   controls <= #`mydelay {4'bxxxx, jumptemp[1:0]}; // ???
+    endcase
+   endcase
+   alucontrol <= #`mydelay alucontroltemp[3:0];
   end
 
 endmodule
 
-module datapath(input         clk, reset,
-                input         signext,
-                input         shiftl16, 
+module datapath(input         clk, reset, 
                 input  [1:0]  jump,
-                input  [5:0]  ex_control_id,
+                input         id_control_id,
+                input  [6:0]  ex_control_id,
                 input  [2:0]  mem_control_id,
                 input  [1:0]  wb_control_id,
                 input  [3:0]  alucontrol_exin,
@@ -238,7 +231,7 @@ module datapath(input         clk, reset,
   wire [31:0] signimm_ex;
   wire [4:0]  instr_d0_ex;
   wire [4:0]  instr_d1_ex;
-  wire [5:0]  ex_control_ex;
+  wire [6:0]  ex_control_ex;
   // ex in-out
   wire [31:0] writedata_ex;
   wire [2:0]  mem_control_ex;
@@ -278,35 +271,34 @@ module datapath(input         clk, reset,
   assign pcsrc = mem_control_mem[0] & zero_mem | mem_control_mem[1] & !zero_mem; // be careful for branch is 2'b11
   assign memwrite = mem_control_mem[2];
   
-  // 여기 이제 컨트롤러 이어줘야됨
   // for pipeline
   flopenr #(64) if_id(
     .clk   (clk),
-	  .reset (reset),
-	  .en    (1'b1),
-	  .d     ({pcplus4_if, instr_ifin}),
-	  .q     ({pcplus4_id, instr_id}));
-	 
+    .reset (reset),
+    .en    (1'b1),
+    .d     ({pcplus4_if, instr_ifin}),
+    .q     ({pcplus4_id, instr_id}));
+   
   flopenr #(149) id_ex(
     .clk   (clk),
-	  .reset (reset),
-	  .en    (1'b1),
-	  .d     ({pcplus4_id, srca_id, writedata_id, signimm_id, instr_d0_id, instr_d1_id, ex_control_id, mem_control_id, wb_control_id}),
-	  .q     ({pcplus4_ex, srca_ex, writedata_ex, signimm_ex, instr_d0_ex, instr_d1_ex, ex_control_ex, mem_control_ex, wb_control_ex}));
-	 
+    .reset (reset),
+    .en    (1'b1),
+    .d     ({pcplus4_id, srca_id, writedata_id, signimm_id, instr_d0_id, instr_d1_id, ex_control_id, mem_control_id, wb_control_id}),
+    .q     ({pcplus4_ex, srca_ex, writedata_ex, signimm_ex, instr_d0_ex, instr_d1_ex, ex_control_ex, mem_control_ex, wb_control_ex}));
+   
   flopenr #(107) ex_mem(
     .clk   (clk),
-	  .reset (reset),
-	  .en    (1'b1),
-	  .d     ({pcbranch_ex, zero_ex, aluout_ex, writedata_ex, writereg_ex, mem_control_ex, wb_control_ex}),
-	  .q     ({pcbranch_mem, zero_mem, aluout_mem, writedata_mem, writereg_mem, mem_control_mem, wb_control_mem}));
-	 
+    .reset (reset),
+    .en    (1'b1),
+    .d     ({pcbranch_ex, zero_ex, aluout_ex, writedata_ex, writereg_ex, mem_control_ex, wb_control_ex}),
+    .q     ({pcbranch_mem, zero_mem, aluout_mem, writedata_mem, writereg_mem, mem_control_mem, wb_control_mem}));
+   
   flopenr #(71) mem_wb(
     .clk   (clk),
-	  .reset (reset),
-	  .en    (1'b1),
-	  .d     ({memreaddata_mem, aluout_mem, writereg_mem, wb_control_mem}),
-	  .q     ({memreaddata_wb, aluout_wb, writereg_wb, wb_control_wb}));
+    .reset (reset),
+    .en    (1'b1),
+    .d     ({memreaddata_mem, aluout_mem, writereg_mem, wb_control_mem}),
+    .q     ({memreaddata_wb, aluout_wb, writereg_wb, wb_control_wb}));
 
   // next PC logic
   flopr #(32) pcreg(
@@ -323,7 +315,7 @@ module datapath(input         clk, reset,
   sl2 immsh(
     .a (signimm_ex),
     .y (signimmsh));
-				 
+         
   adder pcadd2(
     .a (pcplus4_ex),
     .b (signimmsh),
@@ -338,8 +330,8 @@ module datapath(input         clk, reset,
   mux4 #(32) pcmux(
     .d0   (pcnextbr),
     .d1   ({pcplus4_ex[31:28], instr_id[25:0], 2'b00}),
-	  .d2   (aluout_mem),
-	  .d3   (32'b0),
+    .d2   (aluout_mem),
+    .d3   (32'b0),
     .s    (jump),
     .y    (pcnext));
 
@@ -353,12 +345,12 @@ module datapath(input         clk, reset,
     .wd      (result),
     .rd1     (srca_id),
     .rd2     (writedata_id));
-	
+  
   mux2 #(5) zeromux(
-    .d0	(instr_id[25:21]),
-    .d1	(5'b00000),
-    .s	(ex_control_ex[1]),
-    .y	(ra1));
+    .d0  (instr_id[25:21]),
+    .d1  (5'b00000),
+    .s   (ex_control_ex[1]),
+    .y   (ra1));
 
   mux4 #(5) wrmux(
     .d0  (instr_d0_ex),
@@ -376,12 +368,12 @@ module datapath(input         clk, reset,
 
   sign_zero_ext sze(
     .a       (instr_id[15:0]),
-    .signext (signext),
+    .signext (id_control_id),
     .y       (signimm_id[31:0]));
 
   shift_left_16 sl16(
     .a         (signimm_ex[31:0]),
-    .shiftl16  (shiftl16),
+    .shiftl16  (ex_control_ex[6]),
     .y         (shiftedimm[31:0]));
 
   // ALU logic

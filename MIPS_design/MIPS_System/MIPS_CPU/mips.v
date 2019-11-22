@@ -208,13 +208,13 @@ module datapath(input         clk, reset,
   wire [31:0] pcnext, pcnextbr;
   wire [31:0] signimmsh, shiftedimm;
   wire [31:0] srcb;
-  wire [31:0] result;
+  wire [31:0] result_wb;
 //wire        shift;
   wire [4:0]  ra1;
   wire        pcsrc;
   wire [1:0]  fw_control_srca;
   wire [1:0]  fw_control_srcb;
-  wire [31:0] srca_fw, srcb_fw;
+  wire [31:0] srca_fw;
   wire        stall_control;
   
   // if out
@@ -225,7 +225,7 @@ module datapath(input         clk, reset,
   wire [31:0] pcplus4_id;
   wire [31:0] instr_id;
   // id out
-  wire [31:0] writedata_id;
+  wire [31:0] srcb_id;
   wire [31:0] srca_id;
   wire [31:0] signimm_id;
   wire [4:0]  instr_rs_id;
@@ -245,7 +245,7 @@ module datapath(input         clk, reset,
   wire [4:0]  instr_rd_ex;
   wire [6:0]  ex_control_ex;
   // ex in-out
-  wire [31:0] writedata_ex;
+  wire [31:0] srcb_ex;
   wire [2:0]  mem_control_ex;
   wire [1:0]  wb_control_ex;
   // ex out
@@ -253,6 +253,7 @@ module datapath(input         clk, reset,
   wire        zero_ex;
   wire [31:0] aluout_ex;
   wire [4:0]  writereg_ex;
+  wire [31:0] srcb_fw_ex;
   
   // mem in
   wire [31:0] pcbranch_mem;
@@ -303,14 +304,14 @@ module datapath(input         clk, reset,
     .clk   (clk),
     .reset (reset),
     .en    (1'b1),
-    .d     ({pcplus4_id, srca_id, writedata_id, signimm_id, instr_rs_id, instr_rt_id, instr_rd_id, ex_control_id, mem_control_id, wb_control_id}),
-    .q     ({pcplus4_ex, srca_ex, writedata_ex, signimm_ex, instr_rs_ex, instr_rt_ex, instr_rd_ex, ex_control_ex, mem_control_ex, wb_control_ex}));
+    .d     ({pcplus4_id, srca_id, srcb_id, signimm_id, instr_rs_id, instr_rt_id, instr_rd_id, ex_control_id, mem_control_id, wb_control_id}),
+    .q     ({pcplus4_ex, srca_ex, srcb_ex, signimm_ex, instr_rs_ex, instr_rt_ex, instr_rd_ex, ex_control_ex, mem_control_ex, wb_control_ex}));
    
   flopenr #(107) ex_mem(
     .clk   (clk),
     .reset (reset),
     .en    (1'b1),
-    .d     ({pcbranch_ex, zero_ex, aluout_ex, writedata_ex, writereg_ex, mem_control_ex, wb_control_ex}),
+    .d     ({pcbranch_ex , zero_ex , aluout_ex , srcb_fw_ex   , writereg_ex , mem_control_ex , wb_control_ex}),
     .q     ({pcbranch_mem, zero_mem, aluout_mem, writedata_mem, writereg_mem, mem_control_mem, wb_control_mem}));
    
   flopenr #(71) mem_wb(
@@ -318,7 +319,7 @@ module datapath(input         clk, reset,
     .reset (reset),
     .en    (1'b1),
     .d     ({memreaddata_mem, aluout_mem, writereg_mem, wb_control_mem}),
-    .q     ({memreaddata_wb, aluout_wb, writereg_wb, wb_control_wb}));
+    .q     ({memreaddata_wb , aluout_wb , writereg_wb , wb_control_wb}));
 
   // next PC logic
   flopenr #(32) pcreg(
@@ -363,9 +364,9 @@ module datapath(input         clk, reset,
     .ra1     (ra1),
     .ra2     (instr_id[20:16]),
     .wa      (writereg_wb),
-    .wd      (result),
+    .wd      (result_wb),
     .rd1     (srca_id),
-    .rd2     (writedata_id));
+    .rd2     (srcb_id));
   
   mux2 #(5) zeromux(
     .d0  (instr_id[25:21]),
@@ -385,7 +386,7 @@ module datapath(input         clk, reset,
     .d0 (aluout_wb),
     .d1 (memreaddata_wb),
     .s  (wb_control_wb[1]),
-    .y  (result));
+    .y  (result_wb));
 
   sign_zero_ext sze(
     .a       (instr_id[15:0]),
@@ -399,7 +400,7 @@ module datapath(input         clk, reset,
 
   // ALU logic
   mux4 #(32) srcbmux(
-    .d0 (srcb_fw),
+    .d0 (srcb_fw_ex),
     .d1 (shiftedimm[31:0]),
     .d2 (pcplus4_ex),
     .d3 (32'b0),
@@ -407,6 +408,7 @@ module datapath(input         clk, reset,
     .y  (srcb));
 
   forwarding fw(
+    .en              (~stall_control),
     .rs_ex           (instr_rs_ex),
     .rt_ex           (instr_rt_ex),
     .writereg_mem    (writereg_mem),
@@ -419,18 +421,18 @@ module datapath(input         clk, reset,
   mux4 #(32) fwsrcamux(
     .d0 (srca_ex),
     .d1 (aluout_mem),
-    .d2 (result),
+    .d2 (result_wb),
     .d3 (32'bx),
     .s  (fw_control_srca),
     .y  (srca_fw));
     
   mux4 #(32) fwsrcbmux(
-    .d0 (writedata_ex),
+    .d0 (srcb_ex),
     .d1 (aluout_mem),
-    .d2 (result),
+    .d2 (result_wb),
     .d3 (32'bx),
     .s  (fw_control_srcb),
-    .y  (srcb_fw));
+    .y  (srcb_fw_ex));
 
   alu alu(
     .a       (srca_fw),
@@ -441,7 +443,8 @@ module datapath(input         clk, reset,
     
 endmodule
 
-module forwarding (input      [4:0] rs_ex,
+module forwarding (input            en,
+                   input      [4:0] rs_ex,
                    input      [4:0] rt_ex,
                    input      [4:0] writereg_mem,
                    input      [4:0] writereg_wb,
@@ -451,14 +454,18 @@ module forwarding (input      [4:0] rs_ex,
                    output reg [1:0] fw_control_srcb);
 
    always@(*)
-   begin
+   if (en == 1'b1) begin
       if           (rs_ex == writereg_mem && memtoreg_mem == 1'b1) fw_control_srca <= #`mydelay 2'b01;
-      else if      (rs_ex == writereg_wb && memtoreg_wb == 1'b1)   fw_control_srca <= #`mydelay 2'b10;
+      else if      (rs_ex == writereg_wb)                          fw_control_srca <= #`mydelay 2'b10;
       else                                                         fw_control_srca <= #`mydelay 2'b00;
       
       if           (rt_ex == writereg_mem && memtoreg_mem == 1'b1) fw_control_srcb <= #`mydelay 2'b01;
-      else if      (rt_ex == writereg_wb && memtoreg_wb == 1'b1)   fw_control_srcb <= #`mydelay 2'b10;
+      else if      (rt_ex == writereg_wb)                          fw_control_srcb <= #`mydelay 2'b10;
       else                                                         fw_control_srcb <= #`mydelay 2'b00;
+   end
+   else begin
+      fw_control_srca <= #`mydelay 2'b00;
+      fw_control_srcb <= #`mydelay 2'b00;  
    end
 
 endmodule

@@ -2,6 +2,7 @@ library verilog;
 use verilog.vl_types.all;
 entity forwarding is
     port(
+        en              : in     vl_logic;
         rs_ex           : in     vl_logic_vector(4 downto 0);
         rt_ex           : in     vl_logic_vector(4 downto 0);
         writereg_mem    : in     vl_logic_vector(4 downto 0);

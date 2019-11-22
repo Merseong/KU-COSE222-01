@@ -28,7 +28,7 @@ Z14 !s100 @a^I:`ZZTCcP4FODZmd@c2
 Z15 IcD:Lgzd?XCg19gaYHlbL00
 Z16 VR4:XbIkd<X908neF9?e9K1
 Z17 dC:\Users\Merseong\Documents\GitProjects\KU-COSE222-01\MIPS_design\MIPS_System_Sim
-Z18 w1573118662
+Z18 w1574339745
 Z19 8C:/Users/Merseong/Documents/GitProjects/KU-COSE222-01/MIPS_design/MIPS_System/MIPS_CPU/mipsparts.v
 Z20 FC:/Users/Merseong/Documents/GitProjects/KU-COSE222-01/MIPS_design/MIPS_System/MIPS_CPU/mipsparts.v
 Z21 L0 292
@@ -36,7 +36,7 @@ R2
 r1
 !s85 0
 31
-Z22 !s108 1574335538.842000
+Z22 !s108 1574396125.747000
 Z23 !s107 C:/Users/Merseong/Documents/GitProjects/KU-COSE222-01/MIPS_design/MIPS_System/MIPS_CPU/mipsparts.v|
 Z24 !s90 -reportprogress|30|-work|work|C:/Users/Merseong/Documents/GitProjects/KU-COSE222-01/MIPS_design/MIPS_System/MIPS_CPU/mipsparts.v|
 !s101 -O0
@@ -792,14 +792,14 @@ Z196 !s100 _AhUd>Un^h64CID5NQ<gg3
 Z197 IUE5IJ4mBB=CX?G1bDPjgM1
 Z198 V^XE]HX3mW>T3cHSWPH4L72
 R17
-Z199 w1574334729
+Z199 w1574396120
 Z200 8C:/Users/Merseong/Documents/GitProjects/KU-COSE222-01/MIPS_design/MIPS_System/MIPS_CPU/mips.v
 Z201 FC:/Users/Merseong/Documents/GitProjects/KU-COSE222-01/MIPS_design/MIPS_System/MIPS_CPU/mips.v
 Z202 L0 156
 R2
 r1
 31
-Z203 !s108 1574335538.104000
+Z203 !s108 1574396125.540000
 Z204 !s107 C:/Users/Merseong/Documents/GitProjects/KU-COSE222-01/MIPS_design/MIPS_System/MIPS_CPU/mips.v|
 Z205 !s90 -reportprogress|300|-work|work|C:/Users/Merseong/Documents/GitProjects/KU-COSE222-01/MIPS_design/MIPS_System/MIPS_CPU/mips.v|
 R12
@@ -959,14 +959,13 @@ Z236 !s100 oM6SDmEI:Kb0>54R]P0N91
 !s85 0
 !s101 -O0
 vdatapath
-Z237 !s100 fM_T@g`WJVYUa5SRfof=[1
-Z238 IZjAnFaci=idA?Jg>a9iz;3
-Z239 VDHSCIdP:FOXh]BkZbzKj63
+Z237 I=K4o9OQzmgLZVk`cJa@Le2
+Z238 VDHSCIdP:FOXh]BkZbzKj63
 R17
 R199
 R200
 R201
-Z240 L0 192
+Z239 L0 192
 R2
 r1
 31
@@ -975,6 +974,7 @@ R204
 R205
 R12
 !i10b 1
+Z240 !s100 ObPZklHTVU5Z^@kMj0]Ie1
 !s85 0
 !s101 -O0
 vdcfifo
@@ -1225,14 +1225,13 @@ R24
 !s101 -O0
 R12
 vforwarding
-Z293 !s100 L7e^dNYm^PgB@7RnDVo^]3
-Z294 IaQCSa8Xd5g<IAD<@TQcM20
-Z295 VZkMm6FGV8I3DTMNGZCIP=0
+Z293 ICJH[iojzYZSV_ONGLzBck3
+Z294 V4CPDcco[mgi]kDhYUcf]z3
 R17
 R199
 R200
 R201
-Z296 L0 444
+Z295 L0 446
 R2
 r1
 31
@@ -1241,6 +1240,7 @@ R204
 R205
 R12
 !i10b 1
+Z296 !s100 :kVNUXOW8;e@:DUXR7=CJ1
 !s85 0
 !s101 -O0
 vGPIO
@@ -2305,8 +2305,8 @@ Z554 !s90 -reportprogress|300|-work|work|C:/Users/sunhee/Desktop/ESCA_Ta/comparc
 !s101 -O0
 vregfile
 !i10b 1
-Z555 !s100 M;g:9X?:1@hfEYi2F4lnG2
-Z556 IK6bS]kG^8Oi=>aQ7DEU1J0
+Z555 !s100 9@bV?>f>8S[@G@o7h9G^G1
+Z556 IPS8@e7_17cM8DYI]QKS033
 Z557 VoEfJZgI?@czGGfSOSdz_g3
 R17
 R18

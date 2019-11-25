@@ -51,32 +51,32 @@ Disassembly of section .text:
 
 // 8
   20:	3c090000 	lui	t1,0x0
-  24:	25290420 	addiu	t1,t1,1056
+  24:	25290420 	addiu	t1,t1,1056 // lw SEG8
   28:	8d2a0000 	lw	t2,0(t1)
   2c:	8fa30000 	lw	v1,0(sp)
   30:	ac6a000c 	sw	t2,12(v1) // stall
 
 // 7
-  34:	8d2afffc 	lw	t2,-4(t1)
+  34:	8d2afffc 	lw	t2,-4(t1) // lw SEG7
   38:	8fa30000 	lw	v1,0(sp)
   3c:	20630010 	addi	v1,v1,16 // stall
   40:	ac6a0000 	sw	t2,0(v1)
 
 // 6
-  44:	8fa30000 	lw	v1,0(sp)
+  44:	8fa30000 	lw	v1,0(sp) // lw HEX
   48:	20630014 	addi	v1,v1,20 // stall
-  4c:	8d2afff8 	lw	t2,-8(t1)
+  4c:	8d2afff8 	lw	t2,-8(t1) // lw SEG6
   50:	ac6a0000 	sw	t2,0(v1) // stall
 
 // 5
-  54:	8d2afff4 	lw	t2,-12(t1)
+  54:	8d2afff4 	lw	t2,-12(t1) // lw SEG5
   58:	20630004 	addi	v1,v1,4
-  5c:	ac6a0000 	sw	t2,0(v1)
+  5c:	ac6a0000 	sw	t2,0(v1) // stall
 
 // 4
-  60:	8d2afff0 	lw	t2,-16(t1)
+  60:	8d2afff0 	lw	t2,-16(t1) // lw SEG4
   64:	8fa30000 	lw	v1,0(sp)
-  68:	2063000c 	addi	v1,v1,12
+  68:	2063000c 	addi	v1,v1,12 // stall
   6c:	ac6a0000 	sw	t2,0(v1)
 
 // 3

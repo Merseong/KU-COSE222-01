@@ -15,7 +15,7 @@ module mips(input         clk, reset,
             output [31:0] memaddr,
             output [31:0] memwritedata,
             input  [31:0] memreaddata);
-
+// ######  Daeseong Shin: Start  #######  
   wire        signext, shiftl16;
   wire [1:0]  branch;
   wire        pcsrc, zero;
@@ -150,6 +150,7 @@ module maindec(input  [5:0] op,
       6'b000011: controls <= #`mydelay 15'b0_0_1_10_10_00_0_0_01_10; // JAL
       default:   controls <= #`mydelay 15'bxxxxxxxxxxxxxxx; // ???
     endcase
+// ######  Daeseong Shin: End    ####### 
 
 endmodule
 
@@ -189,6 +190,7 @@ module aludec(input      [5:0] funct,
 
 endmodule
 
+// ######  Daeseong Shin: Start  #######  
 module datapath(input         clk, reset, 
                 input  [1:0]  jump,
                 input         id_control_idin,
@@ -469,3 +471,4 @@ module forwarding (input            en,
    end
 
 endmodule
+// ######  Daeseong Shin: End    ####### 

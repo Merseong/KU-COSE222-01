@@ -48,7 +48,9 @@ module regfile(input             clk,
 	reg [31:0] R30;
 	reg [31:0] R31;
 
+// ######  Daeseong Shin: Start  ####### 
 	always @(negedge clk)
+// ######  Daeseong Shin: End    ####### 
 	begin
   	 if (we) 
 	 begin
@@ -181,8 +183,9 @@ module regfile(input         clk,
   // read two ports combinationally
   // write third port on rising edge of clock
   // register 0 hardwired to 0
-
+// ######  Daeseong Shin: Start  #######  
   always @(negedge clk)
+// ######  Daeseong Shin: End    ####### 
     if (we) rf[wa] <= #`mydelay wd;	
 
   assign #`mydelay rd1 = (ra1 != 0) ? rf[ra1] : 0;

@@ -1,0 +1,115 @@
+
+testvec:     file format elf32-bigmips
+testvec
+architecture: mips:3000, flags 0x00000012:
+EXEC_P, HAS_SYMS
+start address 0x00000000
+
+Program Header:
+    LOAD off    0x00000060 vaddr 0x00000000 paddr 0x00000000 align 2**4
+         filesz 0x00000830 memsz 0x00000830 flags rwx
+private flags = 0: [no abi set] [mips1] [not 32bitmode]
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         00000100  00000000  00000000  00000060  2**4
+                  CONTENTS, ALLOC, LOAD, CODE
+  1 .data         00000430  00000400  00000400  00000460  2**4
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .reginfo      00000018  00000000  00000000  00000890  2**2
+                  CONTENTS, READONLY, LINK_ONCE_SAME_SIZE
+SYMBOL TABLE:
+00000000 l    d  .text	00000000 .text
+00000400 l    d  .data	00000000 .data
+00000000 l    d  .reginfo	00000000 .reginfo
+00000000 l       .text	00000000 main
+000000ec l       .text	00000000 error
+00000424 l       .data	00000000 my_stack
+00000420 l       .data	00000000 SEG8
+000000c4 l       .text	00000000 HEX3
+0000008c l       .text	00000000 HEX0
+000000e4 l       .text	00000000 forever
+00000400 l       .data	00000000 SEG0
+00000404 l       .data	00000000 SEG1
+00000408 l       .data	00000000 SEG2
+0000040c l       .data	00000000 SEG3
+00000410 l       .data	00000000 SEG4
+00000414 l       .data	00000000 SEG5
+00000418 l       .data	00000000 SEG6
+0000041c l       .data	00000000 SEG7
+
+
+
+Disassembly of section .text:
+
+00000000 <main>:
+   0:	20030800 	addi	v1,zero,2048
+   4:	00631820 	add	v1,v1,v1
+   8:	00631820 	add	v1,v1,v1
+   c:	3c02ffff 	lui	v0,0xffff
+  10:	00621025 	or	v0,v1,v0
+  14:	14420035 	bne	v0,v0,ec <error>
+  18:	00000000 	nop
+  1c:	3c1d0000 	lui	sp,0x0
+  20:	27bd0424 	addiu	sp,sp,1060
+  24:	afa20000 	sw	v0,0(sp)
+  28:	3c090000 	lui	t1,0x0
+  2c:	25290420 	addiu	t1,t1,1056
+  30:	8d2a0000 	lw	t2,0(t1)
+  34:	8fa30000 	lw	v1,0(sp)
+  38:	00000000 	nop
+  3c:	ac6a000c 	sw	t2,12(v1)
+  40:	8d2afffc 	lw	t2,-4(t1)
+  44:	8fa30000 	lw	v1,0(sp)
+  48:	00000000 	nop
+  4c:	20630010 	addi	v1,v1,16
+  50:	ac6a0000 	sw	t2,0(v1)
+  54:	10600025 	beqz	v1,ec <error>
+  58:	00000000 	nop
+  5c:	8fa30000 	lw	v1,0(sp)
+  60:	00000000 	nop
+  64:	20630014 	addi	v1,v1,20
+  68:	8d2afff8 	lw	t2,-8(t1)
+  6c:	00000000 	nop
+  70:	ac6a0000 	sw	t2,0(v1)
+  74:	8d2afff4 	lw	t2,-12(t1)
+  78:	20630004 	addi	v1,v1,4
+  7c:	ac6a0000 	sw	t2,0(v1)
+  80:	08000031 	j	c4 <HEX3>
+  84:	00000000 	nop
+  88:	21290008 	addi	t1,t1,8
+
+0000008c <HEX0>:
+  8c:	8d2afff0 	lw	t2,-16(t1)
+  90:	8fa30000 	lw	v1,0(sp)
+  94:	00000000 	nop
+  98:	2063000c 	addi	v1,v1,12
+  9c:	ac6a0000 	sw	t2,0(v1)
+  a0:	8d2affec 	lw	t2,-20(t1)
+  a4:	20630004 	addi	v1,v1,4
+  a8:	ac6a0000 	sw	t2,0(v1)
+  ac:	8d2affe8 	lw	t2,-24(t1)
+  b0:	20040004 	addi	a0,zero,4
+  b4:	00641820 	add	v1,v1,a0
+  b8:	ac6a0000 	sw	t2,0(v1)
+  bc:	03e00008 	jr	ra
+  c0:	00000000 	nop
+
+000000c4 <HEX3>:
+  c4:	8d2affe4 	lw	t2,-28(t1)
+  c8:	8fa30000 	lw	v1,0(sp)
+  cc:	00000000 	nop
+  d0:	20630008 	addi	v1,v1,8
+  d4:	20630010 	addi	v1,v1,16
+  d8:	ac6a0000 	sw	t2,0(v1)
+  dc:	0c000023 	jal	8c <HEX0>
+  e0:	00000000 	nop
+
+000000e4 <forever>:
+  e4:	08000039 	j	e4 <forever>
+  e8:	00000000 	nop
+
+000000ec <error>:
+  ec:	0800003b 	j	ec <error>
+  f0:	00000000 	nop
+	...

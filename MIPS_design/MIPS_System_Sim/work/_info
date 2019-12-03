@@ -36,7 +36,7 @@ R2
 r1
 !s85 0
 31
-Z22 !s108 1574835105.790000
+Z22 !s108 1575329460.953000
 Z23 !s107 C:/Users/Merseong/Documents/GitProjects/KU-COSE222-01/MIPS_design/MIPS_System/MIPS_CPU/mipsparts.v|
 Z24 !s90 -reportprogress|30|-work|work|C:/Users/Merseong/Documents/GitProjects/KU-COSE222-01/MIPS_design/MIPS_System/MIPS_CPU/mipsparts.v|
 !s101 -O0
@@ -792,14 +792,14 @@ Z196 !s100 zSl]I[>AP[m]WkUNLd>X?1
 Z197 If1gGCcUoKF]97R0_hSczc1
 Z198 V^XE]HX3mW>T3cHSWPH4L72
 R17
-Z199 w1574835095
+Z199 w1574835252
 Z200 8C:/Users/Merseong/Documents/GitProjects/KU-COSE222-01/MIPS_design/MIPS_System/MIPS_CPU/mips.v
 Z201 FC:/Users/Merseong/Documents/GitProjects/KU-COSE222-01/MIPS_design/MIPS_System/MIPS_CPU/mips.v
 Z202 L0 162
 R2
 r1
 31
-Z203 !s108 1574835105.558000
+Z203 !s108 1575329460.631000
 Z204 !s107 C:/Users/Merseong/Documents/GitProjects/KU-COSE222-01/MIPS_design/MIPS_System/MIPS_CPU/mips.v|
 Z205 !s90 -reportprogress|300|-work|work|C:/Users/Merseong/Documents/GitProjects/KU-COSE222-01/MIPS_design/MIPS_System/MIPS_CPU/mips.v|
 R12
@@ -959,13 +959,14 @@ Z236 !s100 oM6SDmEI:Kb0>54R]P0N91
 !s85 0
 !s101 -O0
 vdatapath
-Z237 I4b2dP^@EFn`RF=b:Xj8i33
-Z238 Vi90J[SPC_k6RN0FLAPQ^E0
+Z237 !s100 PXS2BB5HHLH<Ik3a8C8fd3
+Z238 IGMFIDABWE]P;ET5N0kldO2
+Z239 Vi90J[SPC_k6RN0FLAPQ^E0
 R17
 R199
 R200
 R201
-Z239 L0 199
+Z240 L0 199
 R2
 r1
 31
@@ -974,7 +975,6 @@ R204
 R205
 R12
 !i10b 1
-Z240 !s100 5ZVSdVZ48A1?8:RUJ1l:m1
 !s85 0
 !s101 -O0
 vdcfifo
@@ -1225,14 +1225,14 @@ R24
 !s101 -O0
 R12
 vforwarding
-Z293 !s100 i4HUn`8W<fBD8DW[I]KCj0
-Z294 IQl`Lh6@mze[2I^HgJ7@3[0
+Z293 !s100 cRUVHE[VnQTZ=WFeF5>9>3
+Z294 I@XYg:_jDGRNOY3NoFhKB`2
 Z295 V4CPDcco[mgi]kDhYUcf]z3
 R17
 R199
 R200
 R201
-Z296 L0 458
+Z296 L0 456
 R2
 r1
 31

@@ -48,7 +48,7 @@ Disassembly of section .text:
    8:	00631820 	add	v1,v1,v1
    c:	3c02ffff 	lui	v0,0xffff
   10:	00621025 	or	v0,v1,v0
-  14:	14420035 	bne	v0,v0,ec <error>
+  14:	14420035 	bne	v0,v0,ec <error> //
   18:	00000000 	nop
   1c:	3c1d0000 	lui	sp,0x0
   20:	27bd0424 	addiu	sp,sp,1060
@@ -64,7 +64,7 @@ Disassembly of section .text:
   48:	00000000 	nop
   4c:	20630010 	addi	v1,v1,16
   50:	ac6a0000 	sw	t2,0(v1)
-  54:	10600025 	beqz	v1,ec <error>
+  54:	10600025 	beqz	v1,ec <error> //
   58:	00000000 	nop
   5c:	8fa30000 	lw	v1,0(sp)
   60:	00000000 	nop
@@ -75,7 +75,7 @@ Disassembly of section .text:
   74:	8d2afff4 	lw	t2,-12(t1)
   78:	20630004 	addi	v1,v1,4
   7c:	ac6a0000 	sw	t2,0(v1)
-  80:	08000031 	j	c4 <HEX3>
+  80:	08000031 	j	c4 <HEX3> //
   84:	00000000 	nop
   88:	21290008 	addi	t1,t1,8
 
@@ -92,7 +92,7 @@ Disassembly of section .text:
   b0:	20040004 	addi	a0,zero,4
   b4:	00641820 	add	v1,v1,a0
   b8:	ac6a0000 	sw	t2,0(v1)
-  bc:	03e00008 	jr	ra
+  bc:	03e00008 	jr	ra //
   c0:	00000000 	nop
 
 000000c4 <HEX3>:
@@ -102,14 +102,14 @@ Disassembly of section .text:
   d0:	20630008 	addi	v1,v1,8
   d4:	20630010 	addi	v1,v1,16
   d8:	ac6a0000 	sw	t2,0(v1)
-  dc:	0c000023 	jal	8c <HEX0>
+  dc:	0c000023 	jal	8c <HEX0> //
   e0:	00000000 	nop
 
 000000e4 <forever>:
-  e4:	08000039 	j	e4 <forever>
+  e4:	08000039 	j	e4 <forever> //
   e8:	00000000 	nop
 
 000000ec <error>:
-  ec:	0800003b 	j	ec <error>
+  ec:	0800003b 	j	ec <error> //
   f0:	00000000 	nop
 	...

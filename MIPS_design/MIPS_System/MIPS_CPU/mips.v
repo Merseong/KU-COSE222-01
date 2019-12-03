@@ -21,12 +21,12 @@ module mips(input         clk, reset,
   wire         pcsrc, zero;
   wire [3:0]   alucontrol;
   wire         id_control;
-  wire [10:0]  ex_control;
+  wire [11:0]  ex_control;
   wire         mem_control;
   wire [1:0]   wb_control;
   wire [5:0]   op_id;
   wire [5:0]   funct_ex;
-  wire [1:0]   aluop_ex;
+  wire [2:0]   aluop_ex;
   wire [1:0]   jumptemp_ex;
   wire [1:0]   jump_ex;
 
@@ -67,11 +67,11 @@ module mips(input         clk, reset,
 endmodule
 
 module controller(input  [5:0]  op_id, funct_ex,
-                  input  [1:0]  aluop_ex,
+                  input  [2:0]  aluop_ex,
                   input  [1:0]  jumptemp_ex,
                   output [1:0]  jump_ex,
                   output        id_control,
-                  output [10:0] ex_control,
+                  output [11:0] ex_control,
                   output        mem_control,
                   output [1:0]  wb_control,
                   output [3:0]  alucontrol);
@@ -97,18 +97,18 @@ endmodule
 
 module maindec(input  [5:0]  op,
                output        id_control,
-               output [10:0] ex_control,
+               output [11:0] ex_control,
                output        mem_control,
                output [1:0]  wb_control);
 
-  reg  [14:0] controls;
+  reg  [15:0] controls;
   
   // id
   wire        signext;
   // ex
   wire        shiftl16;
   wire [1:0]  alusrc;
-  wire [1:0]  aluop;
+  wire [2:0]  aluop;
   wire [1:0]  regdst; 
   wire [1:0]  jump;
   wire [1:0]  branch;
@@ -123,11 +123,11 @@ module maindec(input  [5:0]  op,
   /*
   signext = id_control
   
-  branch = ex_control[10:9]
-  jump = ex_control[8:7]
-  shiftl16 = ex_control[6]
-  regdst = ex_control[5:4]
-  aluop = ex_control[3:2]
+  branch = ex_control[11:10]
+  jump = ex_control[9:8]
+  shiftl16 = ex_control[7]
+  regdst = ex_control[6:5]
+  aluop = ex_control[4:2]
   alusrc = ex_control[1:0]
   
   memwrite = mem_control
@@ -142,25 +142,26 @@ module maindec(input  [5:0]  op,
 
   always @(*)
     case(op)
-      6'b000000: controls <= #`mydelay 15'b0_0_1_01_00_00_0_0_00_11; // Rtype
-      6'b100011: controls <= #`mydelay 15'b1_0_1_00_01_00_0_1_00_00; // LW
-      6'b101011: controls <= #`mydelay 15'b1_0_0_00_01_00_1_0_00_00; // SW
-      6'b000100: controls <= #`mydelay 15'b1_0_0_00_00_01_0_0_00_01; // BEQ
-      6'b000101: controls <= #`mydelay 15'b1_0_0_00_00_10_0_0_00_01; // BNE
+      6'b000000: controls <= #`mydelay 16'b0_0_1_01_00_00_0_0_00_111; // Rtype
+      6'b100011: controls <= #`mydelay 16'b1_0_1_00_01_00_0_1_00_000; // LW
+      6'b101011: controls <= #`mydelay 16'b1_0_0_00_01_00_1_0_00_000; // SW
+      6'b000100: controls <= #`mydelay 16'b1_0_0_00_00_01_0_0_00_001; // BEQ
+      6'b000101: controls <= #`mydelay 16'b1_0_0_00_00_10_0_0_00_001; // BNE
       6'b001000, 
-      6'b001001: controls <= #`mydelay 15'b1_0_1_00_01_00_0_0_00_00; // ADDI, ADDIU: only difference is exception
-      6'b001101: controls <= #`mydelay 15'b0_0_1_00_01_00_0_0_00_10; // ORI
-      6'b001111: controls <= #`mydelay 15'b0_1_1_00_01_00_0_0_00_00; // LUI
-      6'b000010: controls <= #`mydelay 15'b0_0_0_00_00_00_0_0_01_00; // J
-      6'b000011: controls <= #`mydelay 15'b0_0_1_10_10_00_0_0_01_10; // JAL
-      default:   controls <= #`mydelay 15'bxxxxxxxxxxxxxxx; // ???
+      6'b001001: controls <= #`mydelay 16'b1_0_1_00_01_00_0_0_00_000; // ADDI, ADDIU: only difference is exception
+      6'b001010: controls <= #`mydelay 16'b1_0_1_00_01_00_0_0_00_011; // SLTI
+      6'b001101: controls <= #`mydelay 16'b0_0_1_00_01_00_0_0_00_010; // ORI
+      6'b001111: controls <= #`mydelay 16'b0_1_1_00_01_00_0_0_00_000; // LUI
+      6'b000010: controls <= #`mydelay 16'b0_0_0_00_00_00_0_0_01_000; // J
+      6'b000011: controls <= #`mydelay 16'b0_0_1_10_10_00_0_0_01_010; // JAL
+      default:   controls <= #`mydelay 16'bxxxxxxxxxxxxxxxx; // ???
     endcase
 // ######  Daeseong Shin: End    ####### 
 
 endmodule
 
 module aludec(input      [5:0] funct,
-              input      [1:0] aluop,
+              input      [2:0] aluop,
               input      [1:0] jumptemp,
               output     [1:0] jump,
               output reg [3:0] alucontrol);
@@ -173,9 +174,10 @@ module aludec(input      [5:0] funct,
   always @(*)
   begin
    case(aluop)
-    2'b00: controls <= #`mydelay {4'b0010, jumptemp[1:0]};  // add
-    2'b01: controls <= #`mydelay {4'b1010, jumptemp[1:0]};  // sub
-    2'b10: controls <= #`mydelay {4'b0001, jumptemp[1:0]};  // or
+    3'b000: controls <= #`mydelay {4'b0010, jumptemp[1:0]};  // add
+    3'b001: controls <= #`mydelay {4'b1010, jumptemp[1:0]};  // sub
+    3'b010: controls <= #`mydelay {4'b0001, jumptemp[1:0]};  // or
+    3'b011: controls <= #`mydelay {4'b1011, jumptemp[1:0]};  // slti
     default: case(funct)          // RTYPE
        6'b000000: controls <= #`mydelay {4'b0001, jumptemp[1:0]}; // NOP
        6'b001000: controls <= #`mydelay 6'b0001_10; // JR
@@ -190,7 +192,7 @@ module aludec(input      [5:0] funct,
        default:   controls <= #`mydelay {4'bxxxx, jumptemp[1:0]}; // ???
     endcase
    endcase
-   alucontrol <= #`mydelay alucontroltemp[3:0];
+   alucontrol <= alucontroltemp[3:0];
   end
 
 endmodule
@@ -198,7 +200,7 @@ endmodule
 // ######  Daeseong Shin: Start  #######  
 module datapath(input         clk, reset, 
                 input         id_control_idin,
-                input  [10:0] ex_control_idin,
+                input  [11:0] ex_control_idin,
                 input         mem_control_idin,
                 input  [1:0]  wb_control_idin,
                 input  [3:0]  alucontrol_exin,
@@ -206,7 +208,7 @@ module datapath(input         clk, reset,
                 output [5:0]  op_idout,
                 output [1:0]  jumptemp_exout,
                 output [5:0]  funct_exout,
-                output [1:0]  aluop_exout,
+                output [2:0]  aluop_exout,
                 input  [1:0]  jump_exin,
                 output [31:0] pc,
                 output [31:0] aluout, writedata,
@@ -244,7 +246,7 @@ module datapath(input         clk, reset,
   wire [4:0]  instr_rs_id;
   wire [4:0]  instr_rt_id;
   wire [4:0]  instr_rd_id;
-  wire [10:0] ex_control_id;
+  wire [11:0] ex_control_id;
   wire        mem_control_id;
   wire [1:0]  wb_control_id;
   
@@ -255,7 +257,7 @@ module datapath(input         clk, reset,
   wire [4:0]  instr_rs_ex;
   wire [4:0]  instr_rt_ex;
   wire [4:0]  instr_rd_ex;
-  wire [10:0] ex_control_ex;
+  wire [11:0] ex_control_ex;
   // ex in-out
   wire [31:0] srcb_ex;
   wire        mem_control_ex;
@@ -289,11 +291,11 @@ module datapath(input         clk, reset,
   assign instr_rd_id = instr_id[15:11];
   assign op_idout = instr_id[31:26];
   assign funct_exout = signimm_ex[5:0];
-  assign aluop_exout = ex_control_ex[3:2];
-  assign pcsrc = ex_control_ex[9] & zero | ex_control_ex[10] & !zero; // be careful for branch is 2'b11
+  assign aluop_exout = ex_control_ex[4:2];
+  assign pcsrc = ex_control_ex[10] & zero | ex_control_ex[11] & !zero; // be careful for branch is 2'b11
   assign memwrite = mem_control_mem;
   assign stall_control = (wb_control_ex[1] == 1'b1) && ((instr_rt_ex == instr_rs_id) || (instr_rt_ex == instr_rt_id));
-  assign jumptemp_exout = ex_control_ex[8:7];
+  assign jumptemp_exout = ex_control_ex[9:8];
   assign flush_control = pcsrc | jump_exin[0] | jump_exin[1];
   
   // for pipeline
@@ -304,13 +306,13 @@ module datapath(input         clk, reset,
     .d     ({pcplus4_if, instr_ifin}),
     .q     ({pcplus4_id, instr_id}));
   
-  mux2 #(15) hazardmux(
+  mux2 #(16) hazardmux(
     .d0  ({id_control_idin, ex_control_idin, mem_control_idin, wb_control_idin}),
-    .d1  (15'b0),
+    .d1  (16'b0),
     .s   (stall_control),
     .y   ({id_control_id  , ex_control_id  , mem_control_id  , wb_control_id}));
   
-  flopenr #(157) id_ex(
+  flopenr #(158) id_ex(
     .clk   (clk),
     .reset (reset),
     .en    (1'b1),
@@ -389,7 +391,7 @@ module datapath(input         clk, reset,
     .d1  (instr_rd_ex),
     .d2  (5'b11111), // $31
     .d3  (5'b00001),
-    .s   (ex_control_ex[5:4]),
+    .s   (ex_control_ex[6:5]),
     .y   (writereg_ex));
 
   mux2 #(32) resmux(
@@ -405,7 +407,7 @@ module datapath(input         clk, reset,
 
   shift_left_16 sl16(
     .a         (signimm_ex[31:0]),
-    .shiftl16  (ex_control_ex[6]),
+    .shiftl16  (ex_control_ex[7]),
     .y         (shiftedimm[31:0]));
 
   // ALU logic
@@ -423,8 +425,8 @@ module datapath(input         clk, reset,
     .rt_ex           (instr_rt_ex),
     .writereg_mem    (writereg_mem),
     .writereg_wb     (writereg_wb),
-    .memtoreg_mem    (wb_control_mem[0]),
-    .memtoreg_wb     (wb_control_wb[0]),
+    .wb_control_mem  (wb_control_mem),
+    .wb_control_wb   (wb_control_wb),
     .fw_control_srca (fw_control_srca),
     .fw_control_srcb (fw_control_srcb));
     
@@ -458,20 +460,20 @@ module forwarding (input            en,
                    input      [4:0] rt_ex,
                    input      [4:0] writereg_mem,
                    input      [4:0] writereg_wb,
-                   input            memtoreg_mem,
-                   input            memtoreg_wb,
+                   input      [1:0] wb_control_mem,
+                   input      [1:0] wb_control_wb,
                    output reg [1:0] fw_control_srca,
                    output reg [1:0] fw_control_srcb);
 
    always@(*)
    if (en == 1'b1) begin
-      if           (rs_ex == writereg_mem && memtoreg_mem == 1'b1) fw_control_srca <= #`mydelay 2'b01;
-      else if      (rs_ex == writereg_wb)                          fw_control_srca <= #`mydelay 2'b10;
-      else                                                         fw_control_srca <= #`mydelay 2'b00;
+      if           (rs_ex == writereg_mem && wb_control_mem == 2'b01 ) fw_control_srca <= #`mydelay 2'b01;
+      else if      (rs_ex == writereg_wb  && wb_control_wb[0] == 1'b1) fw_control_srca <= #`mydelay 2'b10;
+      else                                                             fw_control_srca <= #`mydelay 2'b00;
       
-      if           (rt_ex == writereg_mem && memtoreg_mem == 1'b1) fw_control_srcb <= #`mydelay 2'b01;
-      else if      (rt_ex == writereg_wb)                          fw_control_srcb <= #`mydelay 2'b10;
-      else                                                         fw_control_srcb <= #`mydelay 2'b00;
+      if           (rt_ex == writereg_mem && wb_control_mem == 2'b01 ) fw_control_srcb <= #`mydelay 2'b01;
+      else if      (rt_ex == writereg_wb  && wb_control_wb[0] == 1'b1) fw_control_srcb <= #`mydelay 2'b10;
+      else                                                             fw_control_srcb <= #`mydelay 2'b00;
    end
    else begin
       fw_control_srca <= #`mydelay 2'b00;

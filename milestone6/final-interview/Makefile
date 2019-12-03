@@ -8,7 +8,7 @@
 #  Date:   2010-09-04
 #
 
-    HOME=c:/cygwin/home/esca
+    HOME=c:/cygwin/home/Merseong
     MIPSBIN=$(HOME)/mips-elf/bin
     AS=$(MIPSBIN)/mips-elf-as
     LD=$(MIPSBIN)/mips-elf-ld

@@ -7,8 +7,8 @@ entity forwarding is
         rt_ex           : in     vl_logic_vector(4 downto 0);
         writereg_mem    : in     vl_logic_vector(4 downto 0);
         writereg_wb     : in     vl_logic_vector(4 downto 0);
-        memtoreg_mem    : in     vl_logic;
-        memtoreg_wb     : in     vl_logic;
+        wb_control_mem  : in     vl_logic_vector(1 downto 0);
+        wb_control_wb   : in     vl_logic_vector(1 downto 0);
         fw_control_srca : out    vl_logic_vector(1 downto 0);
         fw_control_srcb : out    vl_logic_vector(1 downto 0)
     );
